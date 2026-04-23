@@ -1,0 +1,9 @@
+# Compiled Java class files
+backend/*.class
+
+# macOS
+.DS_Store
+~$*
+
+# Logs
+/tmp/lughatdad-server.log

@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لغة ضاد — LughatDad | محرر عربي تفاعلي</title>
+  <meta name="description" content="محرر ومفسر تفاعلي للغة برمجة عربية. اكتب كودك بالعربية وشغّله مباشرة." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN (preflight disabled to not break existing IDE styles) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: { preflight: false },
+      theme: { extend: {} }
+    }
+  </script>
+
+  <!-- CodeMirror 5 — works with regular <script> tags, no ESM/CORS issues -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js"></script>
+
+  <style>
+    /* ── Design Tokens ──────────────────────────────────────── */
+    :root {
+      --bg-base:      #0d0e14;
+      --bg-surface:   #12141e;
+      --bg-elevated:  #1a1d2e;
+      --bg-panel:     #0a0b11;
+      --bg-hover:     #1f2235;
+      --border:       #252840;
+      --border-lit:   #363a5a;
+      --text-primary: #e8eaf6;
+      --text-sec:     #8b90b8;
+      --text-muted:   #4a4f72;
+      --purple:       #7c6af7;
+      --purple-light: #a89cff;
+      --purple-dim:   #2e2a5a;
+      --green:        #4ade80;
+      --green-dark:   #166534;
+      --amber:        #fbbf24;
+      --red:          #f87171;
+      --cyan:         #22d3ee;
+      --gray:         #6b7280;
+      --font-ui:      'Cairo', 'Noto Naskh Arabic', sans-serif;
+      --font-mono:    'Noto Naskh Arabic', 'JetBrains Mono', monospace;
+      --r:  10px;
+      --rs:  6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-ui);
+      background: #09090f;
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+
+    /* IDE background layers */
+    #ide-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(124,106,247,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,247,.035) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    #ide-orb {
+      position: fixed; z-index: 0; pointer-events: none;
+      width: 700px; height: 700px; border-radius: 50%;
+      top: -200px; right: -180px;
+      background: radial-gradient(circle, rgba(124,106,247,.13) 0%, transparent 65%);
+    }
+    #ide-orb2 {
+      position: fixed; z-index: 0; pointer-events: none;
+      width: 500px; height: 500px; border-radius: 50%;
+      bottom: -180px; left: -120px;
+      background: radial-gradient(circle, rgba(34,211,238,.07) 0%, transparent 65%);
+    }
+
+    #app {
+      position: relative; z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: rgba(12,13,20,.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(124,106,247,.18);
+      box-shadow: 0 1px 0 rgba(124,106,247,.1), 0 4px 24px rgba(0,0,0,.4);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 14px; }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--purple), #5b4de8);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      padding: 6px 18px;
+      border-radius: 50px;
+      box-shadow: 0 0 24px rgba(124,106,247,.45);
+      letter-spacing: -0.5px;
+    }
+
+    .header-titles h1 { font-size: 17px; font-weight: 700; }
+    .header-titles .sub { font-size: 11px; color: var(--text-sec); }
+
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
+    .badge {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 50px;
+      background: var(--purple-dim); color: var(--purple-light);
+      border: 1px solid rgba(124,106,247,.25);
+    }
+
+    /* Home button */
+    .btn-home {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text-sec); font-size: 12px; font-family: var(--font-ui);
+      font-weight: 600; padding: 6px 13px;
+      border: 1px solid rgba(124,106,247,.25);
+      border-radius: var(--rs);
+      background: rgba(124,106,247,.08);
+      cursor: pointer; transition: all .22s;
+      text-decoration: none;
+    }
+    .btn-home:hover {
+      color: var(--purple-light); border-color: var(--purple);
+      background: rgba(124,106,247,.15);
+      box-shadow: 0 0 14px rgba(124,106,247,.2);
+    }
+
+    .gh-link {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text-sec); text-decoration: none; font-size: 12px;
+      padding: 6px 12px; border: 1px solid var(--border);
+      border-radius: var(--rs); background: var(--bg-elevated);
+      transition: all .2s;
+    }
+    .gh-link:hover { color: var(--text-primary); border-color: var(--purple); }
+
+    /* server status pill */
+    .srv-status {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--text-sec);
+      padding: 5px 12px; border-radius: 50px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+    }
+    .srv-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray); }
+    .srv-dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .srv-dot.offline { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+
+    /* ── SPLIT PANE ─────────────────────────────────────────── */
+    .split { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── EDITOR PANEL ───────────────────────────────────────── */
+    .editor-panel {
+      display: flex; flex-direction: column;
+      flex: 1.15; min-width: 0;
+      background: rgba(14,15,22,.85);
+      border-left: 1px solid rgba(124,106,247,.15);
+      box-shadow: inset -1px 0 0 rgba(124,106,247,.07);
+    }
+
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(18,20,30,.9);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(124,106,247,.13);
+      flex-shrink: 0;
+    }
+
+    .panel-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .6px;
+      color: var(--text-sec); text-transform: uppercase;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .panel-label .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--purple); box-shadow: 0 0 8px var(--purple);
+    }
+
+    .toolbar-btns { display: flex; gap: 8px; }
+
+    .btn-run {
+      display: flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg,#22c55e,#15803d);
+      color: #fff; border: none; border-radius: var(--rs);
+      padding: 7px 22px; font-size: 14px; font-family: var(--font-ui);
+      font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(34,197,94,.4), 0 0 0 1px rgba(34,197,94,.15);
+      transition: all .22s;
+    }
+    .btn-run:hover  { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(34,197,94,.5); }
+    .btn-run:active { transform: translateY(0); }
+    .btn-run.busy   { background: linear-gradient(135deg,#f59e0b,#d97706); cursor: not-allowed; box-shadow: 0 4px 20px rgba(245,158,11,.35); }
+
+    .btn-clear {
+      background: rgba(255,255,255,.04); color: var(--text-sec);
+      border: 1px solid rgba(255,255,255,.09); border-radius: var(--rs);
+      padding: 7px 14px; font-size: 13px; font-family: var(--font-ui);
+      font-weight: 600; cursor: pointer; transition: all .22s;
+    }
+    .btn-clear:hover { color: var(--text-primary); border-color: rgba(124,106,247,.35); background: rgba(124,106,247,.07); }
+
+    /* ── CodeMirror overrides ───────────────────────────────── */
+    .editor-wrap { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+    .CodeMirror {
+      flex: 1;
+      height: 100% !important;
+      font-family: var(--font-mono) !important;
+      font-size: 15.5px !important;
+      direction: rtl !important;
+      text-align: right !important;
+      background: var(--bg-panel) !important;
+      color: #cdd6f4 !important;
+      line-height: 1.75 !important;
+    }
+
+    .CodeMirror-scroll { direction: rtl; }
+    .CodeMirror-gutters { background: var(--bg-surface) !important; border-left: 1px solid var(--border) !important; border-right: none !important; }
+    .CodeMirror-linenumber { color: var(--text-muted) !important; padding: 0 10px 0 14px; }
+    .CodeMirror-activeline-background { background: rgba(124,106,247,.06) !important; }
+    .CodeMirror-selected { background: rgba(124,106,247,.22) !important; }
+    .CodeMirror-cursor { border-left: 2px solid var(--purple-light) !important; }
+
+    /* Arabic syntax tokens */
+    .cm-kw      { color: #bd93f9 !important; font-weight: 700; }  /* keywords — purple */
+    .cm-str     { color: #50fa7b !important; }                     /* strings  — green  */
+    .cm-num     { color: #ffb86c !important; }                     /* numbers  — amber  */
+    .cm-cmt     { color: #6272a4 !important; font-style: italic; } /* comments — gray   */
+    .cm-op      { color: #8be9fd !important; }                     /* operators— cyan   */
+    .cm-bool    { color: #ff79c6 !important; font-weight: 700; }   /* booleans — pink   */
+    .cm-ident   { color: #f8f8f2 !important; }                     /* identifiers       */
+
+    /* ── CHIPS ──────────────────────────────────────────────── */
+    .chips-bar {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 12px; flex-wrap: wrap; flex-shrink: 0;
+      background: var(--bg-elevated); border-top: 1px solid var(--border);
+    }
+    .chips-label { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-left: 2px; white-space: nowrap; }
+
+    .chip {
+      background: var(--bg-hover); border: 1px solid var(--border);
+      color: var(--text-sec); font-family: var(--font-ui);
+      font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 50px; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .chip:hover {
+      background: var(--purple-dim); border-color: var(--purple);
+      color: var(--purple-light); transform: translateY(-1px);
+      box-shadow: 0 2px 10px rgba(124,106,247,.2);
+    }
+
+    /* ── RESIZER ────────────────────────────────────────────── */
+    .resizer {
+      width: 4px; flex-shrink: 0;
+      background: var(--border); cursor: col-resize;
+      transition: background .2s;
+    }
+    .resizer:hover, .resizer.drag { background: var(--purple); }
+
+    /* ── OUTPUT PANEL ───────────────────────────────────────── */
+    .output-panel {
+      display: flex; flex-direction: column;
+      flex: 0.85; min-width: 0;
+      background: rgba(10,11,17,.88);
+      border-right: 1px solid rgba(124,106,247,.1);
+    }
+
+    .output-content {
+      flex: 1; overflow-y: auto;
+      padding: 14px 16px;
+      font-family: var(--font-mono); font-size: 15px;
+      background: var(--bg-panel); direction: rtl;
+    }
+
+    .output-content::-webkit-scrollbar { width: 5px; }
+    .output-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .out-empty {
+      height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: var(--text-muted); gap: 12px; text-align: center;
+    }
+    .out-empty .icon { font-size: 44px; opacity: .25; }
+    .out-empty p { font-size: 13px; }
+
+    .out-line {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 4px 0; line-height: 1.7;
+      border-bottom: 1px solid transparent;
+      animation: fadeUp .18s ease;
+    }
+    .out-line:hover { border-bottom-color: var(--border); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .out-line .ln {
+      color: var(--text-muted); font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      min-width: 22px; text-align: center; padding-top: 3px;
+      direction: ltr;
+    }
+
+    .out-line .lt { color: var(--text-primary); flex: 1; }
+    .out-line.err .lt  { color: var(--red); }
+    .out-line.succ .lt { color: var(--green); }
+
+    /* ── STATUS BAR ─────────────────────────────────────────── */
+    .status-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 5px 14px;
+      background: rgba(12,13,20,.9);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(124,106,247,.12);
+      font-size: 11px; color: var(--text-muted); flex-shrink: 0;
+    }
+    .status-left { display: flex; align-items: center; gap: 7px; }
+
+    .st-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--purple); box-shadow: 0 0 6px var(--purple);
+      transition: all .3s;
+    }
+    .st-dot.ok  { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 1s ease 3; }
+    .st-dot.err { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+    .st-dot.run { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation: pulse .7s infinite; }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: .35; }
+    }
+
+    .st-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+    /* ── SCROLLBARS ─────────────────────────────────────────── */
+    *::-webkit-scrollbar { width: 5px; height: 5px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- IDE background decoration (grid + orbs) -->
+<div id="ide-bg"></div>
+<div id="ide-orb"></div>
+<div id="ide-orb2"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SPLASH / LANDING PAGE
+══════════════════════════════════════════════════════════ -->
+<div id="splash" style="position:fixed;inset:0;z-index:9999;background:#09090f;overflow:hidden;transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);">
+
+  <!-- Mouse-tracking spotlight -->
+  <div id="splashSpot" style="pointer-events:none;position:fixed;inset:0;z-index:1;background:radial-gradient(700px circle at 50% 50%,rgba(124,106,247,.11),transparent 40%);transition:background .12s;"></div>
+
+  <!-- Subtle grid -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(124,106,247,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,247,.04) 1px,transparent 1px);background-size:60px 60px;"></div>
+
+  <!-- Ambient orb -->
+  <div style="position:absolute;top:-200px;left:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(124,106,247,.18) 0%,transparent 65%);pointer-events:none;"></div>
+
+  <style>
+    @keyframes s-in  { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+    @keyframes spin  { to   { transform:rotate(360deg); } }
+    .s-row { animation: s-in .55s ease both; }
+    .s-row:nth-child(1){animation-delay:.08s}.s-row:nth-child(2){animation-delay:.15s}
+    .s-row:nth-child(3){animation-delay:.21s}.s-row:nth-child(4){animation-delay:.27s}
+    .s-row:nth-child(5){animation-delay:.33s}.s-row:nth-child(6){animation-delay:.39s}
+    .s-row:nth-child(7){animation-delay:.45s}.s-row:nth-child(8){animation-delay:.51s}
+    .s-row:nth-child(9){animation-delay:.57s}
+    .member-card { transition: background .2s, border-color .2s; }
+    .member-card:hover { background: rgba(124,106,247,.09) !important; border-color: rgba(124,106,247,.3) !important; }
+    #enterBtn { transition: all .25s; }
+    #enterBtn:hover { filter:brightness(1.12); transform:translateY(-2px); box-shadow:0 14px 44px rgba(124,106,247,.55) !important; }
+    #enterBtn:active { transform:translateY(0); }
+  </style>
+
+  <!-- Main layout -->
+  <div style="position:relative;z-index:10;display:flex;height:100%;">
+
+    <!-- ── LEFT PANEL ─────────────────────────────────────── -->
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:3.5rem 4.5rem;min-width:0;">
+
+      <!-- Badge -->
+      <div class="s-row" style="display:inline-flex;align-items:center;gap:.45rem;padding:.3rem 1rem;border-radius:999px;border:1px solid rgba(124,106,247,.35);background:rgba(124,106,247,.1);color:#a89cff;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;width:fit-content;margin-bottom:2rem;font-family:'Inter',sans-serif;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#7c6af7;box-shadow:0 0 8px #7c6af7;"></span>
+        Compiler Design &nbsp;·&nbsp; 2025 – 2026
+      </div>
+
+      <!-- Title -->
+      <div class="s-row" style="margin-bottom:1.75rem;">
+        <h1 style="font-size:clamp(3rem,5vw,4.25rem);font-weight:900;line-height:1.05;color:#eef0fb;font-family:'Cairo',sans-serif;margin:0 0 .2rem;">
+          لغة <span style="background:linear-gradient(130deg,#7c6af7 30%,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ضاد</span>
+        </h1>
+        <p style="font-size:1.1rem;color:#8b90b8;font-family:'Cairo',sans-serif;margin:0 0 .3rem;">LughatDad</p>
+        <p style="font-size:.82rem;color:#3f4468;font-family:'Cairo',sans-serif;margin:0;">لغة برمجة عربية كاملة &nbsp;·&nbsp; A Full Arabic Programming Language</p>
+      </div>
+
+      <!-- Divider -->
+      <div class="s-row" style="height:1px;background:linear-gradient(90deg,rgba(124,106,247,.45),transparent);margin-bottom:1.75rem;"></div>
+
+      <!-- University + Course -->
+      <div class="s-row" style="margin-bottom:1.5rem;">
+        <p style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:#3f4468;margin:0 0 .45rem;font-family:'Inter',sans-serif;">Institution</p>
+        <p style="font-size:1rem;font-weight:700;color:#eef0fb;font-family:'Cairo',sans-serif;margin:0 0 .2rem;">Islamic University of Madinah</p>
+        <p style="font-size:.82rem;color:#8b90b8;font-family:'Cairo',sans-serif;margin:0;">Compiler Design Course</p>
+      </div>
+
+      <!-- Supervisor -->
+      <div class="s-row" style="margin-bottom:1.5rem;">
+        <p style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:#3f4468;margin:0 0 .6rem;font-family:'Inter',sans-serif;">Supervised By</p>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+          <p style="font-size:.9rem;font-weight:600;color:#eef0fb;margin:0;font-family:'Cairo',sans-serif;">Dr. Othman Aljeezani</p>
+        </div>
+      </div>
+
+      <!-- Team Members -->
+      <div class="s-row" style="margin-bottom:2rem;">
+        <p style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:#3f4468;margin:0 0 .65rem;font-family:'Inter',sans-serif;">Team Members</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;">
+          <div class="member-card" style="display:flex;align-items:center;gap:.55rem;padding:.55rem .85rem;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);"><span style="font-size:.6rem;font-family:'JetBrains Mono',monospace;color:#3f4468;min-width:18px;">01</span><div><div style="font-size:.82rem;color:#eef0fb;font-family:'Inter',sans-serif;font-weight:600;">Mohammed Bremoo</div><div style="font-size:.65rem;font-family:'JetBrains Mono',monospace;"><span style="color:#3f4468;">441000753</span> &nbsp;<a href="https://github.com/Moha-Bremoo" target="_blank" style="color:#7c6af7;text-decoration:none;">@Moha-Bremoo</a></div></div></div>
+          <div class="member-card" style="display:flex;align-items:center;gap:.55rem;padding:.55rem .85rem;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);"><span style="font-size:.6rem;font-family:'JetBrains Mono',monospace;color:#3f4468;min-width:18px;">02</span><div><div style="font-size:.82rem;color:#eef0fb;font-family:'Inter',sans-serif;font-weight:600;">Mazen Bafaqih</div><div style="font-size:.65rem;font-family:'JetBrains Mono',monospace;"><span style="color:#3f4468;">443043723</span> &nbsp;<a href="https://github.com/Mazzz10" target="_blank" style="color:#7c6af7;text-decoration:none;">@Mazzz10</a></div></div></div>
+          <div class="member-card" style="display:flex;align-items:center;gap:.55rem;padding:.55rem .85rem;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);"><span style="font-size:.6rem;font-family:'JetBrains Mono',monospace;color:#3f4468;min-width:18px;">03</span><div><div style="font-size:.82rem;color:#eef0fb;font-family:'Inter',sans-serif;font-weight:600;">Mohammed Abu Daqqa</div><div style="font-size:.65rem;font-family:'JetBrains Mono',monospace;"><span style="color:#3f4468;">443046063</span> &nbsp;<a href="https://github.com/Mohammed132002" target="_blank" style="color:#7c6af7;text-decoration:none;">@Mohammed132002</a></div></div></div>
+          <div class="member-card" style="display:flex;align-items:center;gap:.55rem;padding:.55rem .85rem;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);"><span style="font-size:.6rem;font-family:'JetBrains Mono',monospace;color:#3f4468;min-width:18px;">04</span><div><div style="font-size:.82rem;color:#eef0fb;font-family:'Inter',sans-serif;font-weight:600;">Yasir Fatemi</div><div style="font-size:.65rem;color:#3f4468;font-family:'JetBrains Mono',monospace;">441024553</div></div></div>
+          <div class="member-card" style="grid-column:span 2;display:flex;align-items:center;gap:.55rem;padding:.55rem .85rem;border-radius:9px;background:rgba(124,106,247,.06);border:1px solid rgba(124,106,247,.15);"><span style="font-size:.6rem;font-family:'JetBrains Mono',monospace;color:#3f4468;min-width:18px;">05</span><div><div style="font-size:.82rem;color:#eef0fb;font-family:'Inter',sans-serif;font-weight:600;">Asif Bashir</div><div style="font-size:.65rem;font-family:'JetBrains Mono',monospace;"><span style="color:#3f4468;">443058643</span> &nbsp;<a href="https://github.com/asifbashirugovi" target="_blank" style="color:#7c6af7;text-decoration:none;">@asifbashirugovi</a></div></div></div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="s-row">
+        <button id="enterBtn" style="display:inline-flex;align-items:center;gap:.7rem;padding:.85rem 2rem;border-radius:12px;background:linear-gradient(135deg,#7c6af7,#5340d4);color:#fff;font-family:'Cairo',sans-serif;font-size:.975rem;font-weight:700;border:none;cursor:pointer;box-shadow:0 8px 32px rgba(124,106,247,.42);">
+          <span>دخول إلى المحرر</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── DIVIDER ──────────────────────────────────────────── -->
+    <div style="width:1px;background:linear-gradient(to bottom,transparent 5%,rgba(124,106,247,.25) 40%,rgba(124,106,247,.25) 60%,transparent 95%);flex-shrink:0;"></div>
+
+    <!-- ── RIGHT: SPLINE 3D ────────────────────────────────── -->
+    <div style="flex:1.1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(124,106,247,.12) 0%,transparent 65%);pointer-events:none;"></div>
+      <canvas id="canvas3d" style="width:100%;height:100%;"></canvas>
+      <div id="splineLoader" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;pointer-events:none;">
+        <div style="width:34px;height:34px;border:2px solid rgba(124,106,247,.25);border-top-color:#7c6af7;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        <span style="font-size:.7rem;letter-spacing:.1em;color:#3f4468;font-family:'Inter',sans-serif;">Loading 3D Scene...</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- ═══════════════════════════════ END SPLASH ═══════════════ -->
+
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-badge">ضاد</div>
+      <div class="header-titles">
+        <h1>لغة ضاد &mdash; LughatDad</h1>
+        <div class="sub">لغة برمجة عربية &nbsp;·&nbsp; Compiled via LughatDad.jj (JavaCC)</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="srv-status" id="srvStatus">
+        <div class="srv-dot" id="srvDot"></div>
+        <span id="srvLabel">جارٍ الاتصال...</span>
+      </div>
+      <span class="badge">v1.0</span>
+      <button id="btnHome" class="btn-home">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+        الصفحة الرئيسية
+      </button>
+      <a class="gh-link" href="https://github.com" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <!-- SPLIT PANE -->
+  <div class="split">
+
+    <!-- EDITOR -->
+    <div class="editor-panel" id="editorPanel">
+      <div class="toolbar">
+        <div class="panel-label"><div class="dot"></div> المحرر — Editor</div>
+        <div class="toolbar-btns">
+          <button class="btn-clear" id="btnClear">مسح ✕</button>
+          <button class="btn-run"   id="btnRun">▶&nbsp; تشغيل</button>
+        </div>
+      </div>
+
+      <div class="editor-wrap"><textarea id="codeArea"></textarea></div>
+
+      <div class="chips-bar">
+        <span class="chips-label">أمثلة ←</span>
+        <button class="chip" data-ex="hello">مرحبا بالعالم</button>
+        <button class="chip" data-ex="loop">حلقة بينما</button>
+        <button class="chip" data-ex="grade">شرط إذا/وإلا</button>
+        <button class="chip" data-ex="nested">شرط داخل حلقة</button>
+        <button class="chip" data-ex="table">جدول الضرب</button>
+        <button class="chip" data-ex="bool">صح / خطأ</button>
+      </div>
+    </div>
+
+    <!-- RESIZER -->
+    <div class="resizer" id="resizer"></div>
+
+    <!-- OUTPUT -->
+    <div class="output-panel" id="outputPanel">
+      <div class="toolbar">
+        <div class="panel-label">
+          <div class="dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+          الناتج — Output
+        </div>
+        <span style="font-size:11px;color:var(--text-muted)" id="execTime"></span>
+      </div>
+
+      <div class="output-content" id="outputContent">
+        <div class="out-empty" id="outEmpty">
+          <div class="icon">⌘</div>
+          <p>اضغط <strong>تشغيل</strong> لتنفيذ الكود</p>
+          <p style="font-size:11px;opacity:.55">أو اختر مثالاً من الأعلى · Ctrl+Enter</p>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <div class="st-dot" id="stDot"></div>
+          <span id="stText">جاهز</span>
+        </div>
+        <span class="st-time" id="stTime"></span>
+      </div>
+    </div>
+
+  </div><!-- end split -->
+</div>
+
+<!-- ================================================================
+     INLINE JAVASCRIPT — No module bundler needed
+================================================================ -->
+<script>
+// ── Example programs ────────────────────────────────────────────
+const EXAMPLES = {
+  hello: `// مرحبا بالعالم
+متغير رسالة = "مرحبا بالعالم"؛
+اطبع(رسالة)؛`,
+
+  loop: `// مجموع الأعداد من 1 إلى 10
+متغير مجموع = 0؛
+متغير عداد = 1؛
+بينما (عداد <= 10) {
+    مجموع = مجموع + عداد؛
+    عداد = عداد + 1؛
+}
+اطبع(مجموع)؛`,
+
+  grade: `// شرط إذا / وإلا
+متغير درجة = 75؛
+إذا (درجة >= 60) {
+    اطبع("ناجح")؛
+} وإلا {
+    اطبع("راسب")؛
+}`,
+
+  nested: `// شرط داخل حلقة — الاختبار الرئيسي
+متغير عداد = 1؛
+بينما (عداد <= 3) {
+    إذا (عداد == 2) {
+        اطبع("هذا هو العدد اثنين")؛
+    } وإلا {
+        اطبع(عداد)؛
+    }
+    عداد = عداد + 1؛
+}`,
+
+  table: `// جدول ضرب الرقم 5
+متغير رقم = 1؛
+بينما (رقم <= 10) {
+    اطبع(5 * رقم)؛
+    رقم = رقم + 1؛
+}`,
+
+  bool: `// القيم المنطقية
+متغير صواب = صح؛
+متغير خطأي = خطأ؛
+اطبع(صواب)؛
+اطبع(خطأي)؛
+إذا (صواب) {
+    اطبع("القيمة صحيحة")؛
+} وإلا {
+    اطبع("القيمة خاطئة")؛
+}`
+};
+
+// ── Arabic keywords for syntax mode ─────────────────────────────
+const KW = ["متغير","اطبع","إذا","وإلا","بينما"];
+const BOOL_KW = ["صح","خطأ"];
+
+// ── CodeMirror 5 custom mode for Arabic ─────────────────────────
+CodeMirror.defineMode("lughatdad", function() {
+  return {
+    token: function(stream) {
+      if (stream.eatSpace()) return null;
+
+      // comment
+      if (stream.match("//")) { stream.skipToEnd(); return "cmt"; }
+
+      // string
+      if (stream.eat('"')) {
+        while (!stream.eol()) { if (stream.eat('"')) break; stream.next(); }
+        return "str";
+      }
+
+      // number (Western + Eastern Arabic digits)
+      if (/[0-9\u0660-\u0669]/.test(stream.peek())) {
+        stream.match(/^[0-9\u0660-\u0669]+(\.[0-9\u0660-\u0669]+)?/);
+        return "num";
+      }
+
+      // Arabic word — keyword / bool / ident
+      if (/[\u0600-\u06FF]/.test(stream.peek())) {
+        let w = "";
+        while (/[\u0600-\u06FF0-9\u0660-\u0669]/.test(stream.peek()))
+          w += stream.next();
+        if (KW.includes(w))      return "kw";
+        if (BOOL_KW.includes(w)) return "bool";
+        return "ident";
+      }
+
+      // operator
+      if (stream.match(/^(==|!=|>=|<=|[+\-*\/><=])/)) return "op";
+
+      // punctuation
+      if (stream.match(/^[(){};\u061B]/)) return "op";
+
+      stream.next();
+      return null;
+    }
+  };
+});
+
+// ── Build CodeMirror editor ──────────────────────────────────────
+const editor = CodeMirror.fromTextArea(document.getElementById("codeArea"), {
+  mode: "lughatdad",
+  theme: "dracula",
+  lineNumbers: true,
+  direction: "rtl",
+  lineWrapping: true,
+  autofocus: true,
+  indentUnit: 4,
+  tabSize: 4,
+  extraKeys: {
+    "Ctrl-Enter": runCode,
+    "Cmd-Enter":  runCode,
+  }
+});
+
+editor.setValue(EXAMPLES.nested);
+
+// Force RTL on the editor scroller after init
+setTimeout(() => {
+  document.querySelector(".CodeMirror-scroll").setAttribute("dir", "rtl");
+  document.querySelector(".CodeMirror-lines").style.direction = "rtl";
+}, 100);
+
+// ── Backend API URL ──────────────────────────────────────────────
+const API = "http://localhost:5050";
+
+// ── Server health check ──────────────────────────────────────────
+async function checkServer() {
+  const dot   = document.getElementById("srvDot");
+  const label = document.getElementById("srvLabel");
+  try {
+    const res = await fetch(API + "/api/health", { signal: AbortSignal.timeout(2500) });
+    if (res.ok) {
+      dot.className   = "srv-dot online";
+      label.textContent = "الخادم متصل · LughatDad.jj";
+    } else throw new Error();
+  } catch {
+    dot.className   = "srv-dot offline";
+    label.textContent = "الخادم غير متصل";
+  }
+}
+
+checkServer();
+setInterval(checkServer, 8000);
+
+// ── Run code ─────────────────────────────────────────────────────
+async function runCode() {
+  const code = editor.getValue().trim();
+  const btn  = document.getElementById("btnRun");
+  const dot  = document.getElementById("stDot");
+  const text = document.getElementById("stText");
+
+  btn.classList.add("busy");
+  btn.textContent = "⏳ جارٍ التنفيذ...";
+  dot.className = "st-dot run";
+  text.textContent = "جارٍ التنفيذ...";
+
+  const t0 = performance.now();
+
+  try {
+    const res = await fetch(API + "/api/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+      signal: AbortSignal.timeout(15000)
+    });
+
+    const data = await res.json();
+    const ms   = Math.round(performance.now() - t0);
+    renderOutput(data, ms);
+
+  } catch (err) {
+    const ms = Math.round(performance.now() - t0);
+    renderOutput({
+      success: false,
+      output: [],
+      error: "لا يمكن الاتصال بالخادم. هل شغّلت start.sh؟"
+    }, ms);
+  } finally {
+    btn.classList.remove("busy");
+    btn.innerHTML = "▶&nbsp; تشغيل";
+  }
+}
+
+// ── Render output ────────────────────────────────────────────────
+function renderOutput(data, ms) {
+  const content = document.getElementById("outputContent");
+  const empty   = document.getElementById("outEmpty");
+  const dot     = document.getElementById("stDot");
+  const text    = document.getElementById("stText");
+  const timeEl  = document.getElementById("execTime");
+  const stTime  = document.getElementById("stTime");
+
+  content.innerHTML = "";
+
+  if (data.error) {
+    const line = mkLine("!", "❌ " + esc(data.error), "err");
+    content.appendChild(line);
+    dot.className = "st-dot err";
+    text.textContent = "خطأ في التنفيذ";
+  } else if (!data.output || data.output.length === 0) {
+    const line = mkLine("✓", "تم التنفيذ بنجاح — لا يوجد ناتج", "succ");
+    content.appendChild(line);
+    dot.className = "st-dot ok";
+    text.textContent = "تم التنفيذ بنجاح";
+  } else {
+    data.output.forEach((item, i) => {
+      content.appendChild(mkLine(i + 1, esc(String(item)), ""));
+    });
+    dot.className = "st-dot ok";
+    text.textContent = `تم التنفيذ · ${data.output.length} سطر`;
+  }
+
+  timeEl.textContent = ms + "ms";
+  stTime.textContent = new Date().toLocaleTimeString("ar-SA");
+}
+
+function mkLine(num, html, cls) {
+  const d = document.createElement("div");
+  d.className = "out-line" + (cls ? " " + cls : "");
+  d.innerHTML = `<span class="ln">${num}</span><span class="lt">${html}</span>`;
+  return d;
+}
+
+function esc(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// ── Clear ────────────────────────────────────────────────────────
+document.getElementById("btnClear").addEventListener("click", () => {
+  editor.setValue("");
+  const content = document.getElementById("outputContent");
+  content.innerHTML = "";
+  content.appendChild(document.getElementById("outEmpty") || (() => {
+    const d = document.createElement("div"); d.id = "outEmpty"; d.className = "out-empty";
+    d.innerHTML = '<div class="icon">⌘</div><p>اضغط <strong>تشغيل</strong> لتنفيذ الكود</p>';
+    return d;
+  })());
+  document.getElementById("stDot").className = "st-dot";
+  document.getElementById("stText").textContent = "جاهز";
+  document.getElementById("execTime").textContent = "";
+  editor.focus();
+});
+
+document.getElementById("btnRun").addEventListener("click", runCode);
+
+// ── Example chips ────────────────────────────────────────────────
+document.querySelectorAll(".chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const key = chip.dataset.ex;
+    if (EXAMPLES[key]) { editor.setValue(EXAMPLES[key]); editor.focus(); }
+  });
+});
+
+// ── Resizer (drag to resize panes) ──────────────────────────────
+(function() {
+  const resizer = document.getElementById("resizer");
+  const left    = document.getElementById("editorPanel");
+  const right   = document.getElementById("outputPanel");
+  let dragging = false, startX, startLW, startRW;
+
+  resizer.addEventListener("mousedown", e => {
+    dragging = true;
+    startX  = e.clientX;
+    startLW = left.getBoundingClientRect().width;
+    startRW = right.getBoundingClientRect().width;
+    resizer.classList.add("drag");
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const dx = startX - e.clientX; // RTL direction
+    const nL = startLW - dx;
+    const nR = startRW + dx;
+    if (nL < 250 || nR < 200) return;
+    const total = nL + nR;
+    left.style.flex  = `0 0 ${(nL/total*100).toFixed(2)}%`;
+    right.style.flex = `0 0 ${(nR/total*100).toFixed(2)}%`;
+  });
+
+  document.addEventListener("mouseup", () => {
+    dragging = false;
+    resizer.classList.remove("drag");
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  });
+})();
+
+// ── HOME BUTTON ─────────────────────────────────────────────────
+document.getElementById('btnHome').addEventListener('click', function() {
+  window.location.reload();
+});
+
+// ── SPLASH LOGIC ─────────────────────────────────────────────────
+(function () {
+  // Spotlight follows cursor
+  var spot = document.getElementById('splashSpot');
+  document.addEventListener('mousemove', function (e) {
+    if (!spot) return;
+    spot.style.background =
+      'radial-gradient(700px circle at ' + e.clientX + 'px ' + e.clientY +
+      'px, rgba(124,106,247,.13), transparent 40%)';
+  });
+
+  // Enter button → dismiss splash
+  var enterBtn = document.getElementById('enterBtn');
+  var splash   = document.getElementById('splash');
+  if (enterBtn && splash) {
+    enterBtn.addEventListener('click', function () {
+      splash.style.opacity   = '0';
+      splash.style.transform = 'scale(1.04)';
+      splash.style.pointerEvents = 'none';
+      setTimeout(function () {
+        if (splash.parentNode) splash.parentNode.removeChild(splash);
+      }, 680);
+    });
+  }
+
+  // Load Spline 3D scene via CDN module
+  var s = document.createElement('script');
+  s.type = 'module';
+  s.textContent = [
+    'import { Application } from "https://unpkg.com/@splinetool/runtime/build/runtime.js";',
+    '(async function(){',
+    '  try {',
+    '    var canvas = document.getElementById("canvas3d");',
+    '    var loader = document.getElementById("splineLoader");',
+    '    var app = new Application(canvas);',
+    '    await app.load("https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode");',
+    '    if (loader) loader.style.display = "none";',
+    '  } catch(e) {',
+    '    var loader = document.getElementById("splineLoader");',
+    '    if (loader) loader.innerHTML = "<span style=\'font-size:.75rem;color:#4a4f72;font-family:Inter,sans-serif;\'>3D unavailable offline</span>";',
+    '  }',
+    '})();'
+  ].join('\n');
+  document.body.appendChild(s);
+})();
+</script>
+
+</body>
+</html>

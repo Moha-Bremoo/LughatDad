@@ -1,0 +1,370 @@
+options {
+  UNICODE_INPUT = true;
+  STATIC = true;
+}
+
+PARSER_BEGIN(LughatDad)
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LughatDad {
+    // Symbol Table
+    static HashMap<String, Object> symbolTable = new HashMap<>();
+
+    // --- Interpreter Classes (Part 3) ---
+    static abstract class Expr { abstract Object eval(); }
+    static abstract class Stmt { abstract void execute(); }
+
+    static class NumExpr extends Expr {
+        double val;
+        NumExpr(double v) { val = v; }
+        Object eval() { return val; }
+    }
+
+    static class StrExpr extends Expr {
+        String val;
+        StrExpr(String v) { val = v; }
+        Object eval() { return val; }
+    }
+
+    static class BoolExpr extends Expr {
+        boolean val;
+        BoolExpr(boolean v) { val = v; }
+        Object eval() { return val; }
+    }
+
+    static class VarExpr extends Expr {
+        String name;
+        VarExpr(String n) { name = n; }
+        Object eval() {
+            if(!symbolTable.containsKey(name)) 
+                throw new RuntimeException("Undefined variable: " + name);
+            return symbolTable.get(name);
+        }
+    }
+
+    static class BinOp extends Expr {
+        Expr left, right; String op;
+        BinOp(Expr l, String o, Expr r) { left = l; op = o; right = r; }
+        Object eval() {
+            Object l = left.eval();
+            Object r = right.eval();
+            if (op.equals("==")) return l.equals(r);
+            if (op.equals("!=")) return !l.equals(r);
+            double d1 = (Double) l;
+            double d2 = (Double) r;
+            switch(op) {
+                case "+": return d1 + d2;
+                case "-": return d1 - d2;
+                case "*": return d1 * d2;
+                case "/": return d1 / d2;
+                case ">": return d1 > d2;
+                case "<": return d1 < d2;
+                case ">=": return d1 >= d2;
+                case "<=": return d1 <= d2;
+            }
+            return null;
+        }
+    }
+
+    static class BlockStmt extends Stmt {
+        List<Stmt> stmts = new ArrayList<>();
+        void addStmt(Stmt s) { stmts.add(s); }
+        void execute() { for(Stmt s : stmts) s.execute(); }
+    }
+
+    static class DeclStmt extends Stmt {
+        String name; Expr expr;
+        DeclStmt(String n, Expr e) { name = n; expr = e; }
+        void execute() { symbolTable.put(name, expr.eval()); }
+    }
+
+    static class AssignStmt extends Stmt {
+        String name; Expr expr;
+        AssignStmt(String n, Expr e) { name = n; expr = e; }
+        void execute() {
+            if(!symbolTable.containsKey(name)) 
+                throw new RuntimeException("Variable not declared: " + name);
+            symbolTable.put(name, expr.eval());
+        }
+    }
+
+    static class PrintStmt extends Stmt {
+        Expr expr;
+        PrintStmt(Expr e) { expr = e; }
+        void execute() {
+            Object val = expr.eval();
+            if (val instanceof Double) {
+                double d = (Double) val;
+                if (d == (long) d) { System.out.println((long) d); return; }
+            }
+            System.out.println(val);
+        }
+    }
+
+    static class IfStmt extends Stmt {
+        Expr cond; Stmt thenBlock, elseBlock;
+        IfStmt(Expr c, Stmt t, Stmt e) { cond = c; thenBlock = t; elseBlock = e; }
+        void execute() {
+            Object res = cond.eval();
+            if (res instanceof Boolean && (Boolean) res) { thenBlock.execute(); }
+            else if(elseBlock != null) { elseBlock.execute(); }
+        }
+    }
+
+    static class WhileStmt extends Stmt {
+        Expr cond; Stmt body;
+        WhileStmt(Expr c, Stmt b) { cond = c; body = b; }
+        void execute() {
+            while(true) {
+                Object res = cond.eval();
+                if (res instanceof Boolean && (Boolean) res) { body.execute(); }
+                else { break; }
+            }
+        }
+    }
+
+    static String convertArabicDigits(String input) {
+        return input.replaceAll("٠", "0").replaceAll("١", "1").replaceAll("٢", "2")
+                    .replaceAll("٣", "3").replaceAll("٤", "4").replaceAll("٥", "5")
+                    .replaceAll("٦", "6").replaceAll("٧", "7").replaceAll("٨", "8")
+                    .replaceAll("٩", "9");
+    }
+
+    // --- Main Method ---
+    public static void main(String[] args) {
+        try {
+            java.io.InputStream fileStream = new java.io.FileInputStream("src/test2.txt");
+            LughatDad parser = new LughatDad(fileStream);
+            
+            System.out.println("Reading from test2.txt...");
+            BlockStmt programTree = parser.program();
+            
+            System.out.println("Success! Grammar is 100% correct.");
+            System.out.println(">> Executing Program Output:");
+            System.out.println("----------------------------------");
+            programTree.execute();
+            System.out.println("----------------------------------");
+            
+        } catch (java.io.FileNotFoundException e) {
+            System.err.println("Error: test2.txt not found in src folder!");
+        } catch (ParseException e) {
+            System.err.println("Syntax Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Runtime Error: " + e.getMessage());
+        }
+    }
+}
+PARSER_END(LughatDad)
+/* ==========================================
+ * PART 1: LEXICAL ANALYZER (MEMBER 1)
+ * ========================================== */
+
+SKIP : { 
+  " " | "\t" | "\n" | "\r" 
+  // TODO: Add skip rule for single-line comments (//)
+| < "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")? >
+}
+
+TOKEN: /* KEYWORDS */
+{
+  < MUTA_GHAYYER: "\u0645\u062a\u063a\u064a\u0631" > /* متغير */
+| < ITBA3: "\u0627\u0637\u0628\u0639" >            /* اطبع */
+| < ETHA: "\u0625\u0630\u0627" >                   /* إذا */
+| < WA_ELLA: "\u0648\u0625\u0644\u0627" >          /* وإلا */
+| < BAYNAMA: "\u0628\u064a\u0646\u0645\u0627" >    /* بينما */
+
+// TODO: Add keywords for صح (true) and خطأ (false)
+| < SAH: "\u0635\u062d" >                           /* صح */
+| < KHATA: "\u062e\u0637\u0623" >                   /* خطأ */
+}
+
+TOKEN: /* IDENTIFIERS */
+{
+  // TODO: Define ARABIC_IDENTIFIER using Unicode range \u0600-\u06FF
+
+ < ARABIC_IDENTIFIER: <ARABIC_LETTER> (<ARABIC_LETTER> | <DIGIT>)* >
+| < #ARABIC_LETTER: ["\u0620"-"\u065F"] >
+| < #DIGIT: ["0"-"9", "\u0660"-"\u0669"] >
+
+}
+
+TOKEN: /* LITERALS & OPERATORS */
+{
+  // TODO: Define NUMBER (integer and float)
+  // TODO: Define STRING
+  // ... (other TODOs)
+  /* Literals */
+  < NUMBER: (<DIGIT>)+ ("." (<DIGIT>)+)? >
+| < STRING: "\"" (~["\""])* "\"" >
+
+  /* Arithmetic Operators */
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < MULTIPLY: "*" >
+| < DIVIDE: "/" >
+
+  /* Assignment & Comparison Operators */
+| < ASSIGN: "=" >
+| < GT: ">" >
+| < LT: "<" >
+| < EQ: "==" >
+| < NEQ: "!=" >
+| < GTE: ">=" >
+| < LTE: "<=" >
+
+  /* Punctuation */
+| < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < SEMICOLON: ";" | "\u061B" >
+}
+
+/* ==========================================
+ * PART 2 & 3: PARSER & INTERPRETER (MEMBERS 2 & 3)
+ * ========================================== */
+
+// TODO: Member 2 will translate the BNF grammar here, 
+// and Member 3 will add the Java semantic actions.
+
+/* ==========================================
+ * PART 2: PARSER GRAMMAR (MEMBER 2)
+ * ========================================== */
+
+// Top-level program rule: reads a sequence of statements until EOF
+BlockStmt program() : 
+{ BlockStmt p = new BlockStmt(); Stmt s; }
+{
+  ( s = statement() { p.addStmt(s); } )* <EOF>
+  { return p; }
+}
+
+Stmt statement() : 
+{ Stmt s; }
+{
+  (
+    s = declaration()
+  | s = assignment()
+  | s = printStmt()
+  | s = ifStmt()
+  | s = whileStmt()
+  )
+  { return s; }
+}
+
+Stmt declaration() : 
+{ Token t; Expr e; }
+{
+  <MUTA_GHAYYER> t = <ARABIC_IDENTIFIER> <ASSIGN> e = expression() <SEMICOLON>
+  { return new DeclStmt(t.image, e); }
+}
+
+Stmt assignment() : 
+{ Token t; Expr e; }
+{
+  t = <ARABIC_IDENTIFIER> <ASSIGN> e = expression() <SEMICOLON>
+  { return new AssignStmt(t.image, e); }
+}
+
+Stmt printStmt() : 
+{ Expr e; }
+{
+  <ITBA3> <LPAREN> e = expression() <RPAREN> <SEMICOLON>
+  { return new PrintStmt(e); }
+}
+
+Stmt ifStmt() : 
+{ Expr c; Stmt thenB; Stmt elseB = null; }
+{
+  <ETHA> <LPAREN> c = condition() <RPAREN> thenB = block() 
+  ( LOOKAHEAD(1) <WA_ELLA> elseB = block() )?
+  { return new IfStmt(c, thenB, elseB); }
+}
+
+Stmt whileStmt() : 
+{ Expr c; Stmt b; }
+{
+  <BAYNAMA> <LPAREN> c = condition() <RPAREN> b = block()
+  { return new WhileStmt(c, b); }
+}
+
+BlockStmt block() : 
+{ BlockStmt b = new BlockStmt(); Stmt s; }
+{
+  <LBRACE> ( s = statement() { b.addStmt(s); } )* <RBRACE>
+  { return b; }
+}
+
+/* --- Expressions and Conditions --- */
+
+Expr condition() : 
+{ Expr left; Expr right = null; Token op = null; }
+{
+  left = expression() 
+  ( 
+    op = relop() right = expression() 
+    { left = new BinOp(left, op.image, right); }
+  )?
+  { return left; }
+}
+
+Expr expression() : 
+{ Expr left, right; Token op; }
+{
+  left = term() 
+  ( 
+    ( op = <PLUS> | op = <MINUS> ) right = term() 
+    { left = new BinOp(left, op.image, right); }
+  )*
+  { return left; }
+}
+
+Expr term() : 
+{ Expr left, right; Token op; }
+{
+  left = unary() 
+  ( 
+    ( op = <MULTIPLY> | op = <DIVIDE> ) right = unary() 
+    { left = new BinOp(left, op.image, right); }
+  )*
+  { return left; }
+}
+
+Expr unary() : 
+{ Expr e; Token op = null; }
+{
+  ( op = <MINUS> )? e = primary()
+  { 
+    if (op != null) { return new BinOp(new NumExpr(0), "-", e); }
+    return e; 
+  }
+}
+
+Expr primary() : 
+{ Token t; Expr e; }
+{
+  t = <NUMBER> 
+  { 
+    String s = convertArabicDigits(t.image);
+    return new NumExpr(Double.parseDouble(s)); 
+  }
+| t = <STRING>
+  { return new StrExpr(t.image.substring(1, t.image.length() - 1)); }
+| t = <ARABIC_IDENTIFIER>
+  { return new VarExpr(t.image); }
+| <LPAREN> e = expression() <RPAREN>
+  { return e; }
+| <SAH>
+  { return new BoolExpr(true); }
+| <KHATA>
+  { return new BoolExpr(false); }
+}
+
+Token relop() : 
+{ Token t; }
+{
+  ( t = <GT> | t = <LT> | t = <EQ> | t = <NEQ> | t = <GTE> | t = <LTE> )
+  { return t; }
+}
