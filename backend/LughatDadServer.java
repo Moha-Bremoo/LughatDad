@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
  */
 public class LughatDadServer {
 
-    static final int  PORT       = 5050;
+    static final int  DEFAULT_PORT = 5050;
     // Server is always started from the backend/ directory.
     // Use CWD-based paths — simple and reliable.
     static final Path BACKEND_DIR = Paths.get("").toAbsolutePath();
@@ -34,7 +34,8 @@ public class LughatDadServer {
 
     // ── main ────────────────────────────────────────────────────────────
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        int port = resolvePort();
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.setExecutor(Executors.newFixedThreadPool(4));
         server.createContext("/api/run",    new RunHandler());
         server.createContext("/api/health", new HealthHandler());
@@ -43,10 +44,20 @@ public class LughatDadServer {
 
         System.out.println("================================================");
         System.out.println("  لغة ضاد — LughatDad Server");
-        System.out.println("  URL:      http://localhost:" + PORT);
+        System.out.println("  URL:      http://localhost:" + port);
         System.out.println("  Frontend: " + WEBAPP_DIR);
         System.out.println("  Classes:  " + CLASS_DIR);
         System.out.println("================================================");
+    }
+
+    static int resolvePort() {
+        String envPort = System.getenv("PORT");
+        if (envPort == null || envPort.isBlank()) return DEFAULT_PORT;
+        try {
+            return Integer.parseInt(envPort.trim());
+        } catch (NumberFormatException ignored) {
+            return DEFAULT_PORT;
+        }
     }
 
     // ── POST /api/run ─────────────────────────────────────────────────
