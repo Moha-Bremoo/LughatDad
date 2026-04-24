@@ -42,7 +42,7 @@ Expected output:
 
 ```text
 1
-2
+هذا هو العدد اثنين
 3
 ```
 
@@ -108,8 +108,3 @@ After deployment:
 - JavaCC
 - HTML/CSS/JavaScript
 - Docker + Render
-
-## Maintainer
-
-[@Yasir239074](https://github.com/Yasir239074)
-
