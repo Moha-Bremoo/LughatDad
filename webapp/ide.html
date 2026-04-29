@@ -444,10 +444,16 @@
 
       <div class="output-content" id="outputContent">
         <div class="out-empty" id="outEmpty">
-          <div class="icon">⌘</div>
+          <div style="position:relative;width:180px;height:180px;margin-bottom:.5rem;">
+            <canvas id="spline3d" style="width:180px;height:180px;opacity:.7;"></canvas>
+            <div id="splineLoad3d" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+              <div style="width:20px;height:20px;border:2px solid rgba(124,106,247,.25);border-top-color:#7c6af7;border-radius:50%;animation:spin3d 1s linear infinite;"></div>
+            </div>
+          </div>
           <p>اضغط <strong>تشغيل</strong> لتنفيذ الكود</p>
           <p style="font-size:11px;opacity:.55">أو اختر مثالاً من الأعلى · Ctrl+Enter</p>
         </div>
+        <style>@keyframes spin3d{to{transform:rotate(360deg);}}</style>
       </div>
 
       <div class="status-bar">
@@ -958,6 +964,29 @@ document.getElementById('btnHome').addEventListener('click', function() {
 })();
 // ════════════════════════ END INTERPRETER ════════════════════════
 
+
+// ── Spline 3D in output panel ────────────────────────────────────
+(function(){
+  var s = document.createElement('script');
+  s.type = 'module';
+  s.textContent = [
+    'import { Application } from "https://unpkg.com/@splinetool/runtime/build/runtime.js";',
+    '(async function(){',
+    '  try {',
+    '    var canvas = document.getElementById("spline3d");',
+    '    var loader = document.getElementById("splineLoad3d");',
+    '    if(!canvas) return;',
+    '    var app = new Application(canvas);',
+    '    await app.load("https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode");',
+    '    if(loader) loader.style.display="none";',
+    '  } catch(e) {',
+    '    var loader = document.getElementById("splineLoad3d");',
+    '    if(loader) loader.style.display="none";',
+    '  }',
+    '})();'
+  ].join("\n");
+  document.body.appendChild(s);
+})();
 
 </script>
 

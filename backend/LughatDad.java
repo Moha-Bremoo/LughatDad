@@ -95,6 +95,10 @@ public class LughatDad implements LughatDadConstants {
                 double d = (Double) val;
                 if (d == (long) d) { System.out.println((long) d); return; }
             }
+            if (val instanceof Boolean) {
+                System.out.println((Boolean)val ? "\u0635\u062d" : "\u062e\u0637\u0623");
+                return;
+            }
             System.out.println(val);
         }
     }
