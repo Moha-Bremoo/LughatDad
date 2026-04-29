@@ -370,5 +370,35 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);
   </div>
   <div class="footer-copy">© 2026 LughatDad Team — Islamic University of Madinah</div>
 </footer>
+<script>
+// Mouse spotlight
+document.addEventListener('mousemove', function(e){
+  var s = document.getElementById('spotlight');
+  if(s) s.style.background = 'radial-gradient(700px circle at '+e.clientX+'px '+e.clientY+'px,rgba(124,106,247,.11),transparent 40%)';
+});
+
+// Load Spline 3D scene
+(function(){
+  var s = document.createElement('script');
+  s.type = 'module';
+  s.textContent = [
+    'import { Application } from "https://unpkg.com/@splinetool/runtime/build/runtime.js";',
+    '(async function(){',
+    '  try {',
+    '    var canvas = document.getElementById("canvas3d");',
+    '    var loader = document.getElementById("splineLoader");',
+    '    if(!canvas) return;',
+    '    var app = new Application(canvas);',
+    '    await app.load("https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode");',
+    '    if (loader) loader.style.display = "none";',
+    '  } catch(e) {',
+    '    var loader = document.getElementById("splineLoader");',
+    '    if (loader) loader.innerHTML = "<span style=\'font-size:.75rem;color:#4a4f72;\'>3D unavailable</span>";',
+    '  }',
+    '})();'
+  ].join('\n');
+  document.body.appendChild(s);
+})();
+</script>
 </body>
 </html>
