@@ -209,19 +209,45 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">
-    <span style="width:6px;height:6px;border-radius:50%;background:#7c6af7;box-shadow:0 0 8px #7c6af7"></span>
-    Compiler Design &nbsp;·&nbsp; الجامعة الإسلامية بالمدينة المنورة
+<!-- Mouse spotlight -->
+<div id="spotlight" style="pointer-events:none;position:fixed;inset:0;z-index:2;background:radial-gradient(700px circle at 50% 50%,rgba(124,106,247,.11),transparent 40%);transition:background .1s;"></div>
+
+<!-- HERO (two-column: text right, 3D left) -->
+<section style="position:relative;z-index:3;display:flex;align-items:center;justify-content:center;
+  min-height:calc(100vh - 64px);padding:3rem 4rem;gap:3rem;flex-wrap:wrap;">
+
+  <!-- LEFT: Spline 3D robot -->
+  <div style="flex:1.1;min-width:320px;position:relative;height:480px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(124,106,247,.14) 0%,transparent 65%);pointer-events:none;z-index:0;"></div>
+    <canvas id="canvas3d" style="width:100%;height:100%;position:relative;z-index:1;"></canvas>
+    <div id="splineLoader" style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;pointer-events:none;">
+      <div style="width:34px;height:34px;border:2px solid rgba(124,106,247,.25);border-top-color:#7c6af7;border-radius:50%;animation:spin3d 1s linear infinite;"></div>
+      <span style="font-size:.7rem;letter-spacing:.1em;color:#4a4f72;font-family:'Inter',sans-serif;">Loading 3D Scene…</span>
+    </div>
   </div>
-  <h1>لغة <span class="grad">ضاد</span></h1>
-  <p>لغة برمجة عربية كاملة — اكتب كودك بالعربية وشغّله مباشرة في المتصفح. مفسر حقيقي مبني بـ JavaCC.</p>
-  <div class="hero-ctas">
-    <a class="cta-main" href="ide.html?go=1">▶ ابدأ البرمجة الآن</a>
-    <a class="cta-sec" href="learn.html">📚 تعلم اللغة</a>
+
+  <!-- Divider -->
+  <div style="width:1px;height:380px;background:linear-gradient(to bottom,transparent 5%,rgba(124,106,247,.3) 40%,rgba(124,106,247,.3) 60%,transparent 95%);flex-shrink:0;"></div>
+
+  <!-- RIGHT: text -->
+  <div style="flex:1;min-width:280px;display:flex;flex-direction:column;align-items:flex-start;">
+    <div class="hero-badge" style="animation:fadeUp .6s ease both;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#7c6af7;box-shadow:0 0 8px #7c6af7"></span>
+      Compiler Design &nbsp;·&nbsp; الجامعة الإسلامية بالمدينة المنورة
+    </div>
+    <h1 style="font-size:clamp(2.8rem,5vw,4.5rem);font-weight:900;line-height:1.05;margin-bottom:1rem;animation:fadeUp .6s .1s ease both;">
+      لغة <span class="grad">ضاد</span>
+    </h1>
+    <p style="font-size:1.05rem;color:var(--text-sec);line-height:1.7;margin-bottom:2rem;animation:fadeUp .6s .2s ease both;">
+      لغة برمجة عربية كاملة — اكتب كودك بالعربية وشغّله مباشرة في المتصفح. مفسر حقيقي مبني بـ JavaCC.
+    </p>
+    <div class="hero-ctas" style="animation:fadeUp .6s .3s ease both;justify-content:flex-start;">
+      <a class="cta-main" href="ide.html?go=1">▶ ابدأ البرمجة الآن</a>
+      <a class="cta-sec" href="learn.html">📚 تعلم اللغة</a>
+    </div>
   </div>
 </section>
+<style>@keyframes spin3d{to{transform:rotate(360deg);}}</style>
 
 <!-- STATS -->
 <div class="stats">
@@ -339,31 +365,31 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);
   </div>
   <div class="team-grid">
     <div class="member-card">
-      <div class="member-avatar">م</div>
+      <div class="member-avatar">١</div>
       <div class="member-name">Mohammed Bremoo</div>
       <div class="member-id">441000753</div>
       <a class="member-gh" href="https://github.com/Moha-Bremoo" target="_blank">@Moha-Bremoo</a>
     </div>
     <div class="member-card">
-      <div class="member-avatar">م</div>
+      <div class="member-avatar">٢</div>
       <div class="member-name">Mazen Bafaqih</div>
       <div class="member-id">443043723</div>
       <a class="member-gh" href="https://github.com/Mazzz10" target="_blank">@Mazzz10</a>
     </div>
     <div class="member-card">
-      <div class="member-avatar">م</div>
+      <div class="member-avatar">٣</div>
       <div class="member-name">Mohammed Abu Daqqa</div>
       <div class="member-id">443046063</div>
       <a class="member-gh" href="https://github.com/Mohammed132002" target="_blank">@Mohammed132002</a>
     </div>
     <div class="member-card">
-      <div class="member-avatar">ي</div>
+      <div class="member-avatar">٤</div>
       <div class="member-name">Yasir Fatemi</div>
       <div class="member-id">441024553</div>
       <a class="member-gh" href="https://github.com/Yasir239074" target="_blank">@Yasir239074</a>
     </div>
     <div class="member-card">
-      <div class="member-avatar">ع</div>
+      <div class="member-avatar">٥</div>
       <div class="member-name">Asif Bashir</div>
       <div class="member-id">443058643</div>
       <a class="member-gh" href="https://github.com/asifbashirugovi" target="_blank">@asifbashirugovi</a>
