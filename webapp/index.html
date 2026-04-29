@@ -235,14 +235,30 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);
 <div class="video-section">
   <div class="section-header">
     <div class="section-badge">🎬 شرح مرئي</div>
-    <h2>فيديو تعليمي قادم</h2>
-    <p>سيتم إضافة الشرح التفصيلي للمشروع قريباً</p>
+    <h2>شرح المشروع الكامل</h2>
+    <p>شرح تفصيلي لكل مراحل المشروع من المحلل اللغوي إلى النشر السحابي</p>
   </div>
-  <div class="video-placeholder">
-    <div class="play-ring">▶</div>
-    <h3>شرح لغة ضاد — المشروع الكامل</h3>
-    <p>المحاضر: د. عثمان الجيزاني &nbsp;·&nbsp; مقرر تصميم المترجمات</p>
-    <div class="coming-badge">⏳ قريباً — Coming Soon</div>
+  <div style="position:relative;border-radius:16px;overflow:hidden;
+    box-shadow:0 0 60px rgba(124,106,247,.2);
+    border:1px solid rgba(124,106,247,.2);aspect-ratio:16/9;">
+    <iframe
+      id="projectVideo"
+      src="https://www.youtube.com/embed/6HtKKaSe_5o?rel=0&modestbranding=1"
+      title="لغة ضاد — شرح المشروع الكامل"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+      style="position:absolute;inset:0;width:100%;height:100%;border:none;">
+    </iframe>
+  </div>
+  <div style="text-align:center;margin-top:1rem;">
+    <a href="https://youtu.be/6HtKKaSe_5o" target="_blank"
+      style="display:inline-flex;align-items:center;gap:.5rem;color:var(--text-muted);
+      font-size:.78rem;text-decoration:none;transition:color .2s;"
+      onmouseover="this.style.color='var(--purple-light)'"
+      onmouseout="this.style.color='var(--text-muted)'">
+      ▶ شاهد على YouTube
+    </a>
   </div>
 </div>
 
