@@ -1,374 +1,965 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>لغة ضاد — LughatDad | لغة برمجة عربية</title>
-<meta name="description" content="لغة ضاد — لغة برمجة عربية كاملة مع محرر تفاعلي. اكتب كودك بالعربية وشغّله مباشرة في المتصفح."/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<style>
-:root{
-  --bg:#09090f;--surface:#12141e;--elevated:#1a1d2e;
-  --border:#252840;--purple:#7c6af7;--purple-light:#a89cff;
-  --purple-dim:#2e2a5a;--text:#e8eaf6;--text-sec:#8b90b8;
-  --text-muted:#4a4f72;--green:#4ade80;--cyan:#22d3ee;
-  --amber:#fbbf24;--red:#f87171;
-  --font:'Cairo','Inter',sans-serif;--mono:'JetBrains Mono',monospace;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);font-family:var(--font);color:var(--text);
-  background-image:linear-gradient(rgba(124,106,247,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(124,106,247,.04) 1px,transparent 1px);
-  background-size:60px 60px;}
-.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;}
-.orb1{width:700px;height:700px;top:-250px;right:-200px;
-  background:radial-gradient(circle,rgba(124,106,247,.18) 0%,transparent 65%);}
-.orb2{width:500px;height:500px;bottom:-200px;left:-150px;
-  background:radial-gradient(circle,rgba(34,211,238,.1) 0%,transparent 65%);}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>المحرر — لغة ضاد IDE</title>
+  <meta name="description" content="محرر ومفسر تفاعلي للغة برمجة عربية. اكتب كودك بالعربية وشغّله مباشرة." />
 
-/* NAV */
-nav{position:sticky;top:0;z-index:100;
-  background:rgba(9,9,15,.85);backdrop-filter:blur(16px);
-  border-bottom:1px solid rgba(124,106,247,.15);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:.85rem 2.5rem;}
-.nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;}
-.nav-logo .badge{background:linear-gradient(135deg,#7c6af7,#5b4de8);
-  color:#fff;font-size:1.1rem;font-weight:900;padding:.25rem 1rem;
-  border-radius:50px;box-shadow:0 0 16px rgba(124,106,247,.4);}
-.nav-logo .name{font-size:1rem;font-weight:700;color:var(--text);}
-.nav-links{display:flex;align-items:center;gap:.5rem;}
-.nav-link{color:var(--text-sec);text-decoration:none;font-size:.85rem;
-  font-weight:600;padding:.5rem .9rem;border-radius:8px;transition:all .2s;}
-.nav-link:hover{color:var(--purple-light);background:rgba(124,106,247,.1);}
-.nav-btn{background:linear-gradient(135deg,#7c6af7,#5b4de8);color:#fff;
-  text-decoration:none;font-size:.85rem;font-weight:700;
-  padding:.55rem 1.3rem;border-radius:8px;transition:all .2s;
-  box-shadow:0 0 16px rgba(124,106,247,.3);}
-.nav-btn:hover{filter:brightness(1.1);box-shadow:0 0 24px rgba(124,106,247,.5);}
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-/* HERO */
-.hero{position:relative;z-index:1;
-  display:flex;flex-direction:column;align-items:center;
-  text-align:center;padding:6rem 1.5rem 5rem;}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;
-  padding:.35rem 1.1rem;border-radius:999px;
-  border:1px solid rgba(124,106,247,.35);background:rgba(124,106,247,.1);
-  color:var(--purple-light);font-size:.72rem;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;margin-bottom:2rem;
-  animation:fadeUp .6s ease both;}
-.hero h1{font-size:clamp(2.8rem,6vw,5rem);font-weight:900;line-height:1.05;
-  margin-bottom:1rem;animation:fadeUp .6s .1s ease both;}
-.hero h1 .grad{background:linear-gradient(130deg,#7c6af7 30%,#c4b5fd 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.hero p{font-size:1.1rem;color:var(--text-sec);max-width:580px;line-height:1.7;
-  margin-bottom:2.5rem;animation:fadeUp .6s .2s ease both;}
-.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
-  animation:fadeUp .6s .3s ease both;}
-.cta-main{display:inline-flex;align-items:center;gap:.6rem;
-  padding:.9rem 2rem;border-radius:12px;
-  background:linear-gradient(135deg,#7c6af7,#5b4de8);color:#fff;
-  font-family:var(--font);font-size:1rem;font-weight:700;
-  text-decoration:none;box-shadow:0 8px 32px rgba(124,106,247,.42);
-  transition:all .25s;}
-.cta-main:hover{filter:brightness(1.1);transform:translateY(-2px);
-  box-shadow:0 14px 44px rgba(124,106,247,.55);}
-.cta-sec{display:inline-flex;align-items:center;gap:.6rem;
-  padding:.9rem 2rem;border-radius:12px;
-  border:1px solid rgba(124,106,247,.3);color:var(--purple-light);
-  font-family:var(--font);font-size:1rem;font-weight:700;
-  text-decoration:none;background:rgba(124,106,247,.08);transition:all .25s;}
-.cta-sec:hover{background:rgba(124,106,247,.15);border-color:var(--purple);}
+  <!-- Tailwind CDN (preflight disabled to not break existing IDE styles) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: { preflight: false },
+      theme: { extend: {} }
+    }
+  </script>
 
-/* STATS */
-.stats{display:flex;justify-content:center;gap:3rem;
-  padding:2rem 1.5rem;position:relative;z-index:1;flex-wrap:wrap;}
-.stat{text-align:center;}
-.stat-val{font-size:2rem;font-weight:900;color:var(--purple-light);}
-.stat-lbl{font-size:.78rem;color:var(--text-muted);margin-top:.2rem;}
+  <!-- CodeMirror 5 — works with regular <script> tags, no ESM/CORS issues -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js"></script>
 
-/* VIDEO SECTION */
-.video-section{max-width:860px;margin:0 auto;padding:4rem 1.5rem;
-  position:relative;z-index:1;}
-.section-header{text-align:center;margin-bottom:2.5rem;}
-.section-badge{display:inline-flex;align-items:center;gap:.4rem;
-  padding:.3rem .9rem;border-radius:999px;
-  border:1px solid rgba(124,106,247,.3);background:rgba(124,106,247,.08);
-  color:var(--purple-light);font-size:.72rem;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem;}
-.section-header h2{font-size:1.8rem;font-weight:800;margin-bottom:.6rem;}
-.section-header p{color:var(--text-sec);}
-.video-placeholder{background:rgba(18,20,30,.9);border:1px solid rgba(124,106,247,.2);
-  border-radius:20px;overflow:hidden;aspect-ratio:16/9;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:1.2rem;box-shadow:0 0 60px rgba(124,106,247,.1);
-  background-image:linear-gradient(rgba(124,106,247,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(124,106,247,.04) 1px,transparent 1px);
-  background-size:40px 40px;}
-.video-placeholder .play-ring{width:80px;height:80px;border-radius:50%;
-  background:rgba(124,106,247,.15);border:2px solid rgba(124,106,247,.4);
-  display:flex;align-items:center;justify-content:center;
-  font-size:2rem;color:var(--purple-light);
-  box-shadow:0 0 30px rgba(124,106,247,.2);transition:all .25s;cursor:pointer;}
-.video-placeholder .play-ring:hover{background:rgba(124,106,247,.3);transform:scale(1.06);}
-.video-placeholder h3{font-size:1.1rem;font-weight:700;}
-.video-placeholder p{color:var(--text-muted);font-size:.85rem;}
-.coming-badge{display:inline-flex;align-items:center;gap:.4rem;
-  padding:.3rem .8rem;border-radius:6px;background:rgba(251,191,36,.1);
-  border:1px solid rgba(251,191,36,.3);color:var(--amber);
-  font-size:.72rem;font-weight:700;}
+  <style>
+    /* ── Design Tokens ──────────────────────────────────────── */
+    :root {
+      --bg-base:      #0d0e14;
+      --bg-surface:   #12141e;
+      --bg-elevated:  #1a1d2e;
+      --bg-panel:     #0a0b11;
+      --bg-hover:     #1f2235;
+      --border:       #252840;
+      --border-lit:   #363a5a;
+      --text-primary: #e8eaf6;
+      --text-sec:     #8b90b8;
+      --text-muted:   #4a4f72;
+      --purple:       #7c6af7;
+      --purple-light: #a89cff;
+      --purple-dim:   #2e2a5a;
+      --green:        #4ade80;
+      --green-dark:   #166534;
+      --amber:        #fbbf24;
+      --red:          #f87171;
+      --cyan:         #22d3ee;
+      --gray:         #6b7280;
+      --font-ui:      'Cairo', 'Noto Naskh Arabic', sans-serif;
+      --font-mono:    'Noto Naskh Arabic', 'JetBrains Mono', monospace;
+      --r:  10px;
+      --rs:  6px;
+    }
 
-/* FEATURES */
-.features{max-width:1000px;margin:0 auto;padding:4rem 1.5rem;
-  position:relative;z-index:1;}
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;
-  margin-top:2.5rem;}
-.feat-card{background:rgba(18,20,30,.8);border:1px solid var(--border);
-  border-radius:16px;padding:1.5rem;transition:all .25s;}
-.feat-card:hover{border-color:rgba(124,106,247,.3);
-  box-shadow:0 8px 32px rgba(124,106,247,.1);transform:translateY(-3px);}
-.feat-icon{font-size:1.8rem;margin-bottom:.8rem;}
-.feat-card h3{font-size:.95rem;font-weight:700;margin-bottom:.5rem;}
-.feat-card p{font-size:.82rem;color:var(--text-sec);line-height:1.6;}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* CODE PREVIEW */
-.code-preview{max-width:860px;margin:0 auto;padding:4rem 1.5rem;
-  position:relative;z-index:1;}
-.code-window{background:var(--surface);border:1px solid var(--border);
-  border-radius:16px;overflow:hidden;box-shadow:0 0 60px rgba(124,106,247,.1);}
-.code-topbar{display:flex;align-items:center;padding:.8rem 1.2rem;
-  background:var(--elevated);border-bottom:1px solid var(--border);gap:.5rem;}
-.code-dot{width:10px;height:10px;border-radius:50%;}
-.code-title{margin-right:auto;font-size:.75rem;color:var(--text-muted);
-  font-family:var(--mono);}
-pre.demo{padding:1.5rem;direction:rtl;font-family:var(--mono);
-  font-size:.88rem;line-height:1.85;color:#cdd6f4;overflow-x:auto;}
-.kw{color:#bd93f9;font-weight:700;}
-.str{color:#50fa7b;}
-.num{color:#ffb86c;}
-.cmt{color:#6272a4;font-style:italic;}
-.op{color:#8be9fd;}
+    html, body {
+      height: 100%;
+      font-family: var(--font-ui);
+      background: #09090f;
+      color: var(--text-primary);
+      overflow: hidden;
+    }
 
-/* TEAM */
-.team{max-width:900px;margin:0 auto;padding:4rem 1.5rem;
-  position:relative;z-index:1;}
-.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem;}
-.member-card{background:rgba(18,20,30,.8);border:1px solid var(--border);
-  border-radius:14px;padding:1.2rem;text-align:center;transition:all .2s;}
-.member-card:hover{border-color:rgba(124,106,247,.3);
-  box-shadow:0 4px 20px rgba(124,106,247,.1);}
-.member-avatar{width:48px;height:48px;border-radius:50%;
-  background:linear-gradient(135deg,var(--purple-dim),#1a1d2e);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;margin:0 auto .8rem;}
-.member-name{font-size:.88rem;font-weight:700;margin-bottom:.2rem;}
-.member-id{font-size:.72rem;color:var(--text-muted);font-family:var(--mono);}
-.member-gh{font-size:.75rem;color:var(--purple-light);text-decoration:none;}
-.member-card.wide{grid-column:span 1;}
+    /* IDE background layers */
+    #ide-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(124,106,247,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,247,.035) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    #ide-orb {
+      position: fixed; z-index: 0; pointer-events: none;
+      width: 700px; height: 700px; border-radius: 50%;
+      top: -200px; right: -180px;
+      background: radial-gradient(circle, rgba(124,106,247,.13) 0%, transparent 65%);
+    }
+    #ide-orb2 {
+      position: fixed; z-index: 0; pointer-events: none;
+      width: 500px; height: 500px; border-radius: 50%;
+      bottom: -180px; left: -120px;
+      background: radial-gradient(circle, rgba(34,211,238,.07) 0%, transparent 65%);
+    }
 
-/* FOOTER */
-footer{position:relative;z-index:1;border-top:1px solid var(--border);
-  padding:2.5rem 2.5rem;display:flex;align-items:center;
-  justify-content:space-between;flex-wrap:wrap;gap:1rem;}
-.footer-logo{display:flex;align-items:center;gap:.6rem;}
-.footer-logo .badge{background:linear-gradient(135deg,#7c6af7,#5b4de8);
-  color:#fff;font-size:.9rem;font-weight:900;padding:.2rem .8rem;border-radius:50px;}
-.footer-links{display:flex;gap:1rem;flex-wrap:wrap;}
-.footer-links a{color:var(--text-muted);font-size:.82rem;text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:var(--purple-light);}
-.footer-copy{font-size:.75rem;color:var(--text-muted);}
+    #app {
+      position: relative; z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(16px);}
-  to{opacity:1;transform:translateY(0);}
-}
-@media(max-width:700px){
-  nav{padding:.75rem 1.2rem;}
-  .features-grid,.team-grid{grid-template-columns:1fr;}
-}
-</style>
+    /* ── HEADER ─────────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: rgba(12,13,20,.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(124,106,247,.18);
+      box-shadow: 0 1px 0 rgba(124,106,247,.1), 0 4px 24px rgba(0,0,0,.4);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 14px; }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--purple), #5b4de8);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      padding: 6px 18px;
+      border-radius: 50px;
+      box-shadow: 0 0 24px rgba(124,106,247,.45);
+      letter-spacing: -0.5px;
+    }
+
+    .header-titles h1 { font-size: 17px; font-weight: 700; }
+    .header-titles .sub { font-size: 11px; color: var(--text-sec); }
+
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
+    .badge {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 50px;
+      background: var(--purple-dim); color: var(--purple-light);
+      border: 1px solid rgba(124,106,247,.25);
+    }
+
+    /* Home button */
+    .btn-home {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text-sec); font-size: 12px; font-family: var(--font-ui);
+      font-weight: 600; padding: 6px 13px;
+      border: 1px solid rgba(124,106,247,.25);
+      border-radius: var(--rs);
+      background: rgba(124,106,247,.08);
+      cursor: pointer; transition: all .22s;
+      text-decoration: none;
+    }
+    .btn-home:hover {
+      color: var(--purple-light); border-color: var(--purple);
+      background: rgba(124,106,247,.15);
+      box-shadow: 0 0 14px rgba(124,106,247,.2);
+    }
+
+    .gh-link {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text-sec); text-decoration: none; font-size: 12px;
+      padding: 6px 12px; border: 1px solid var(--border);
+      border-radius: var(--rs); background: var(--bg-elevated);
+      transition: all .2s;
+    }
+    .gh-link:hover { color: var(--text-primary); border-color: var(--purple); }
+
+    /* server status pill */
+    .srv-status {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--text-sec);
+      padding: 5px 12px; border-radius: 50px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+    }
+    .srv-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray); }
+    .srv-dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .srv-dot.offline { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+
+    /* ── SPLIT PANE ─────────────────────────────────────────── */
+    .split { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── EDITOR PANEL ───────────────────────────────────────── */
+    .editor-panel {
+      display: flex; flex-direction: column;
+      flex: 1.15; min-width: 0;
+      background: rgba(14,15,22,.85);
+      border-left: 1px solid rgba(124,106,247,.15);
+      box-shadow: inset -1px 0 0 rgba(124,106,247,.07);
+    }
+
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(18,20,30,.9);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(124,106,247,.13);
+      flex-shrink: 0;
+    }
+
+    .panel-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .6px;
+      color: var(--text-sec); text-transform: uppercase;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .panel-label .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--purple); box-shadow: 0 0 8px var(--purple);
+    }
+
+    .toolbar-btns { display: flex; gap: 8px; }
+
+    .btn-run {
+      display: flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg,#22c55e,#15803d);
+      color: #fff; border: none; border-radius: var(--rs);
+      padding: 7px 22px; font-size: 14px; font-family: var(--font-ui);
+      font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(34,197,94,.4), 0 0 0 1px rgba(34,197,94,.15);
+      transition: all .22s;
+    }
+    .btn-run:hover  { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(34,197,94,.5); }
+    .btn-run:active { transform: translateY(0); }
+    .btn-run.busy   { background: linear-gradient(135deg,#f59e0b,#d97706); cursor: not-allowed; box-shadow: 0 4px 20px rgba(245,158,11,.35); }
+
+    .btn-clear {
+      background: rgba(255,255,255,.04); color: var(--text-sec);
+      border: 1px solid rgba(255,255,255,.09); border-radius: var(--rs);
+      padding: 7px 14px; font-size: 13px; font-family: var(--font-ui);
+      font-weight: 600; cursor: pointer; transition: all .22s;
+    }
+    .btn-clear:hover { color: var(--text-primary); border-color: rgba(124,106,247,.35); background: rgba(124,106,247,.07); }
+
+    /* ── CodeMirror overrides ───────────────────────────────── */
+    .editor-wrap { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+    .CodeMirror {
+      flex: 1;
+      height: 100% !important;
+      font-family: var(--font-mono) !important;
+      font-size: 15.5px !important;
+      direction: rtl !important;
+      text-align: right !important;
+      background: var(--bg-panel) !important;
+      color: #cdd6f4 !important;
+      line-height: 1.75 !important;
+    }
+
+    .CodeMirror-scroll { direction: rtl; }
+    .CodeMirror-gutters { background: var(--bg-surface) !important; border-left: 1px solid var(--border) !important; border-right: none !important; }
+    .CodeMirror-linenumber { color: var(--text-muted) !important; padding: 0 10px 0 14px; }
+    .CodeMirror-activeline-background { background: rgba(124,106,247,.06) !important; }
+    .CodeMirror-selected { background: rgba(124,106,247,.22) !important; }
+    .CodeMirror-cursor { border-left: 2px solid var(--purple-light) !important; }
+
+    /* Arabic syntax tokens */
+    .cm-kw      { color: #bd93f9 !important; font-weight: 700; }  /* keywords — purple */
+    .cm-str     { color: #50fa7b !important; }                     /* strings  — green  */
+    .cm-num     { color: #ffb86c !important; }                     /* numbers  — amber  */
+    .cm-cmt     { color: #6272a4 !important; font-style: italic; } /* comments — gray   */
+    .cm-op      { color: #8be9fd !important; }                     /* operators— cyan   */
+    .cm-bool    { color: #ff79c6 !important; font-weight: 700; }   /* booleans — pink   */
+    .cm-ident   { color: #f8f8f2 !important; }                     /* identifiers       */
+
+    /* ── CHIPS ──────────────────────────────────────────────── */
+    .chips-bar {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 12px; flex-wrap: wrap; flex-shrink: 0;
+      background: var(--bg-elevated); border-top: 1px solid var(--border);
+    }
+    .chips-label { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-left: 2px; white-space: nowrap; }
+
+    .chip {
+      background: var(--bg-hover); border: 1px solid var(--border);
+      color: var(--text-sec); font-family: var(--font-ui);
+      font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 50px; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .chip:hover {
+      background: var(--purple-dim); border-color: var(--purple);
+      color: var(--purple-light); transform: translateY(-1px);
+      box-shadow: 0 2px 10px rgba(124,106,247,.2);
+    }
+
+    /* ── RESIZER ────────────────────────────────────────────── */
+    .resizer {
+      width: 4px; flex-shrink: 0;
+      background: var(--border); cursor: col-resize;
+      transition: background .2s;
+    }
+    .resizer:hover, .resizer.drag { background: var(--purple); }
+
+    /* ── OUTPUT PANEL ───────────────────────────────────────── */
+    .output-panel {
+      display: flex; flex-direction: column;
+      flex: 0.85; min-width: 0;
+      background: rgba(10,11,17,.88);
+      border-right: 1px solid rgba(124,106,247,.1);
+    }
+
+    .output-content {
+      flex: 1; overflow-y: auto;
+      padding: 14px 16px;
+      font-family: var(--font-mono); font-size: 15px;
+      background: var(--bg-panel); direction: rtl;
+    }
+
+    .output-content::-webkit-scrollbar { width: 5px; }
+    .output-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .out-empty {
+      height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: var(--text-muted); gap: 12px; text-align: center;
+    }
+    .out-empty .icon { font-size: 44px; opacity: .25; }
+    .out-empty p { font-size: 13px; }
+
+    .out-line {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 4px 0; line-height: 1.7;
+      border-bottom: 1px solid transparent;
+      animation: fadeUp .18s ease;
+    }
+    .out-line:hover { border-bottom-color: var(--border); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .out-line .ln {
+      color: var(--text-muted); font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      min-width: 22px; text-align: center; padding-top: 3px;
+      direction: ltr;
+    }
+
+    .out-line .lt { color: var(--text-primary); flex: 1; }
+    .out-line.err .lt  { color: var(--red); }
+    .out-line.succ .lt { color: var(--green); }
+
+    /* ── STATUS BAR ─────────────────────────────────────────── */
+    .status-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 5px 14px;
+      background: rgba(12,13,20,.9);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(124,106,247,.12);
+      font-size: 11px; color: var(--text-muted); flex-shrink: 0;
+    }
+    .status-left { display: flex; align-items: center; gap: 7px; }
+
+    .st-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--purple); box-shadow: 0 0 6px var(--purple);
+      transition: all .3s;
+    }
+    .st-dot.ok  { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 1s ease 3; }
+    .st-dot.err { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+    .st-dot.run { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation: pulse .7s infinite; }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: .35; }
+    }
+
+    .st-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+    /* ── SCROLLBARS ─────────────────────────────────────────── */
+    *::-webkit-scrollbar { width: 5px; height: 5px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
 </head>
 <body>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="index.html">
-    <div class="badge">ضاد</div>
-    <span class="name">لغة ضاد</span>
-  </a>
-  <div class="nav-links">
-    <a class="nav-link" href="learn.html">تعلم</a>
-    <a class="nav-link" href="ide.html">المحرر</a>
-    <a class="nav-link" href="contact.html">تواصل معنا</a>
-    <a class="nav-link" href="https://github.com/Moha-Bremoo/LughatDad" target="_blank">GitHub</a>
-    <a class="nav-btn" href="login.html">دخول →</a>
-  </div>
-</nav>
+<!-- IDE background decoration (grid + orbs) -->
+<div id="ide-bg"></div>
+<div id="ide-orb"></div>
+<div id="ide-orb2"></div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">
-    <span style="width:6px;height:6px;border-radius:50%;background:#7c6af7;box-shadow:0 0 8px #7c6af7"></span>
-    Compiler Design &nbsp;·&nbsp; الجامعة الإسلامية بالمدينة المنورة
-  </div>
-  <h1>لغة <span class="grad">ضاد</span></h1>
-  <p>لغة برمجة عربية كاملة — اكتب كودك بالعربية وشغّله مباشرة في المتصفح. مفسر حقيقي مبني بـ JavaCC.</p>
-  <div class="hero-ctas">
-    <a class="cta-main" href="ide.html">▶ ابدأ البرمجة الآن</a>
-    <a class="cta-sec" href="learn.html">📚 تعلم اللغة</a>
-  </div>
-</section>
 
-<!-- STATS -->
-<div class="stats">
-  <div class="stat"><div class="stat-val">٧</div><div class="stat-lbl">كلمات مفتاحية عربية</div></div>
-  <div class="stat"><div class="stat-val">٥</div><div class="stat-lbl">أعضاء الفريق</div></div>
-  <div class="stat"><div class="stat-val">١٠٠٪</div><div class="stat-lbl">عربي بالكامل</div></div>
-  <div class="stat"><div class="stat-val">JavaCC</div><div class="stat-lbl">محول لغة احترافي</div></div>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-badge">ضاد</div>
+      <div class="header-titles">
+        <h1>لغة ضاد &mdash; LughatDad</h1>
+        <div class="sub">لغة برمجة عربية &nbsp;·&nbsp; Compiled via LughatDad.jj (JavaCC)</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="srv-status" id="srvStatus">
+        <div class="srv-dot" id="srvDot"></div>
+        <span id="srvLabel">جارٍ الاتصال...</span>
+      </div>
+      <span class="badge">v1.0</span>
+      <button id="btnHome" class="btn-home">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+        الصفحة الرئيسية
+      </button>
+            <a class="gh-link" href="index.html">🏠 الرئيسية</a>
+      <a class="gh-link" href="learn.html">📚 تعلم</a>
+      <a class="gh-link" href="contact.html">📬 تواصل</a>
+      <a class="gh-link" href="https://github.com/Moha-Bremoo/LughatDad" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <!-- SPLIT PANE -->
+  <div class="split">
+
+    <!-- EDITOR -->
+    <div class="editor-panel" id="editorPanel">
+      <div class="toolbar">
+        <div class="panel-label"><div class="dot"></div> المحرر — Editor</div>
+        <div class="toolbar-btns">
+          <button class="btn-clear" id="btnClear">مسح ✕</button>
+          <button class="btn-run"   id="btnRun">▶&nbsp; تشغيل</button>
+        </div>
+      </div>
+
+      <div class="editor-wrap"><textarea id="codeArea"></textarea></div>
+
+      <div class="chips-bar">
+        <span class="chips-label">أمثلة ←</span>
+        <button class="chip" data-ex="hello">مرحبا بالعالم</button>
+        <button class="chip" data-ex="loop">حلقة بينما</button>
+        <button class="chip" data-ex="grade">شرط إذا/وإلا</button>
+        <button class="chip" data-ex="nested">شرط داخل حلقة</button>
+        <button class="chip" data-ex="table">جدول الضرب</button>
+        <button class="chip" data-ex="bool">صح / خطأ</button>
+      </div>
+    </div>
+
+    <!-- RESIZER -->
+    <div class="resizer" id="resizer"></div>
+
+    <!-- OUTPUT -->
+    <div class="output-panel" id="outputPanel">
+      <div class="toolbar">
+        <div class="panel-label">
+          <div class="dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+          الناتج — Output
+        </div>
+        <span style="font-size:11px;color:var(--text-muted)" id="execTime"></span>
+      </div>
+
+      <div class="output-content" id="outputContent">
+        <div class="out-empty" id="outEmpty">
+          <div class="icon">⌘</div>
+          <p>اضغط <strong>تشغيل</strong> لتنفيذ الكود</p>
+          <p style="font-size:11px;opacity:.55">أو اختر مثالاً من الأعلى · Ctrl+Enter</p>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <div class="st-dot" id="stDot"></div>
+          <span id="stText">جاهز</span>
+        </div>
+        <span class="st-time" id="stTime"></span>
+      </div>
+    </div>
+
+  </div><!-- end split -->
 </div>
 
-<!-- VIDEO SECTION -->
-<div class="video-section">
-  <div class="section-header">
-    <div class="section-badge">🎬 شرح مرئي</div>
-    <h2>فيديو تعليمي قادم</h2>
-    <p>سيتم إضافة الشرح التفصيلي للمشروع قريباً</p>
-  </div>
-  <div class="video-placeholder">
-    <div class="play-ring">▶</div>
-    <h3>شرح لغة ضاد — المشروع الكامل</h3>
-    <p>المحاضر: د. عثمان الجيزاني &nbsp;·&nbsp; مقرر تصميم المترجمات</p>
-    <div class="coming-badge">⏳ قريباً — Coming Soon</div>
-  </div>
-</div>
+<!-- ================================================================
+     INLINE JAVASCRIPT — No module bundler needed
+================================================================ -->
+<script>
+// ── Example programs ────────────────────────────────────────────
+const EXAMPLES = {
+  hello: `// مرحبا بالعالم
+متغير رسالة = "مرحبا بالعالم"؛
+اطبع(رسالة)؛`,
 
-<!-- FEATURES -->
-<div class="features">
-  <div class="section-header">
-    <div class="section-badge">⚡ المميزات</div>
-    <h2>ماذا تدعم لغة ضاد؟</h2>
-  </div>
-  <div class="features-grid">
-    <div class="feat-card">
-      <div class="feat-icon">🔤</div>
-      <h3>كلمات مفتاحية عربية</h3>
-      <p>متغير، اطبع، إذا، وإلا، بينما، صح، خطأ</p>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🔢</div>
-      <h3>أرقام عربية وغربية</h3>
-      <p>يدعم الأرقام ٠١٢٣ والأرقام 0123 بالتساوي</p>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">📦</div>
-      <h3>المتغيرات والأنواع</h3>
-      <p>أعداد، نصوص، قيم منطقية (صح/خطأ)</p>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🔁</div>
-      <h3>الحلقات والشروط</h3>
-      <p>بينما، إذا/وإلا مع دعم التعشيش</p>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🖥️</div>
-      <h3>محرر تفاعلي</h3>
-      <p>CodeMirror مع تمييز صياغي عربي كامل</p>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">☁️</div>
-      <h3>نشر سحابي</h3>
-      <p>مرفوع على Render.com — يعمل في المتصفح مباشرة</p>
-    </div>
-  </div>
-</div>
+  loop: `// مجموع الأعداد من 1 إلى 10
+متغير مجموع = 0؛
+متغير عداد = 1؛
+بينما (عداد <= 10) {
+    مجموع = مجموع + عداد؛
+    عداد = عداد + 1؛
+}
+اطبع(مجموع)؛`,
 
-<!-- CODE PREVIEW -->
-<div class="code-preview">
-  <div class="section-header">
-    <div class="section-badge">💻 مثال حي</div>
-    <h2>كود عربي حقيقي</h2>
-  </div>
-  <div class="code-window">
-    <div class="code-topbar">
-      <div class="code-dot" style="background:#ff5f57"></div>
-      <div class="code-dot" style="background:#febc2e"></div>
-      <div class="code-dot" style="background:#28c840"></div>
-      <span class="code-title">example.dad</span>
-    </div>
-    <pre class="demo"><span class="cmt">// برنامج عربي: جدول ضرب الرقم 7</span>
-<span class="kw">متغير</span> رقم = <span class="num">1</span>؛
-<span class="kw">متغير</span> نتيجة = <span class="num">0</span>؛
+  grade: `// شرط إذا / وإلا
+متغير درجة = 75؛
+إذا (درجة >= 60) {
+    اطبع("ناجح")؛
+} وإلا {
+    اطبع("راسب")؛
+}`,
 
-<span class="kw">بينما</span> (رقم <span class="op">&lt;=</span> <span class="num">10</span>) {
-    نتيجة = <span class="num">7</span> <span class="op">*</span> رقم؛
-    <span class="kw">اطبع</span>(نتيجة)؛
-    رقم = رقم <span class="op">+</span> <span class="num">1</span>؛
-}</pre>
-  </div>
-  <div style="text-align:center;margin-top:1.5rem;">
-    <a class="cta-main" href="ide.html">جرّب هذا الكود الآن ▶</a>
-  </div>
-</div>
+  nested: `// شرط داخل حلقة — الاختبار الرئيسي
+متغير عداد = 1؛
+بينما (عداد <= 3) {
+    إذا (عداد == 2) {
+        اطبع("هذا هو العدد اثنين")؛
+    } وإلا {
+        اطبع(عداد)؛
+    }
+    عداد = عداد + 1؛
+}`,
 
-<!-- TEAM -->
-<div class="team">
-  <div class="section-header">
-    <div class="section-badge">👥 الفريق</div>
-    <h2>أعضاء المشروع</h2>
-    <p>المشرف: د. عثمان الجيزاني — مقرر تصميم المترجمات 2025–2026</p>
-  </div>
-  <div class="team-grid">
-    <div class="member-card">
-      <div class="member-avatar">م</div>
-      <div class="member-name">Mohammed Bremoo</div>
-      <div class="member-id">441000753</div>
-      <a class="member-gh" href="https://github.com/Moha-Bremoo" target="_blank">@Moha-Bremoo</a>
-    </div>
-    <div class="member-card">
-      <div class="member-avatar">م</div>
-      <div class="member-name">Mazen Bafaqih</div>
-      <div class="member-id">443043723</div>
-      <a class="member-gh" href="https://github.com/Mazzz10" target="_blank">@Mazzz10</a>
-    </div>
-    <div class="member-card">
-      <div class="member-avatar">م</div>
-      <div class="member-name">Mohammed Abu Daqqa</div>
-      <div class="member-id">443046063</div>
-      <a class="member-gh" href="https://github.com/Mohammed132002" target="_blank">@Mohammed132002</a>
-    </div>
-    <div class="member-card">
-      <div class="member-avatar">ي</div>
-      <div class="member-name">Yasir Fatemi</div>
-      <div class="member-id">441024553</div>
-      <a class="member-gh" href="https://github.com/Yasir239074" target="_blank">@Yasir239074</a>
-    </div>
-    <div class="member-card">
-      <div class="member-avatar">ع</div>
-      <div class="member-name">Asif Bashir</div>
-      <div class="member-id">443058643</div>
-      <a class="member-gh" href="https://github.com/asifbashirugovi" target="_blank">@asifbashirugovi</a>
-    </div>
-  </div>
-</div>
+  table: `// جدول ضرب الرقم 5
+متغير رقم = 1؛
+بينما (رقم <= 10) {
+    اطبع(5 * رقم)؛
+    رقم = رقم + 1؛
+}`,
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">
-    <div class="badge">ضاد</div>
-    <span style="font-size:.9rem;font-weight:700;">لغة ضاد — LughatDad</span>
-  </div>
-  <div class="footer-links">
-    <a href="learn.html">تعلم</a>
-    <a href="ide.html">المحرر</a>
-    <a href="contact.html">تواصل معنا</a>
-    <a href="https://github.com/Moha-Bremoo/LughatDad" target="_blank">GitHub</a>
-    <a href="https://lughatdad-ox2p.onrender.com" target="_blank">النسخة المنشورة</a>
-  </div>
-  <div class="footer-copy">© 2026 LughatDad Team — Islamic University of Madinah</div>
-</footer>
+  bool: `// القيم المنطقية
+متغير صواب = صح؛
+متغير خطأي = خطأ؛
+اطبع(صواب)؛
+اطبع(خطأي)؛
+إذا (صواب) {
+    اطبع("القيمة صحيحة")؛
+} وإلا {
+    اطبع("القيمة خاطئة")؛
+}`
+};
+
+// ── Arabic keywords for syntax mode ─────────────────────────────
+const KW = ["متغير","اطبع","إذا","وإلا","بينما"];
+const BOOL_KW = ["صح","خطأ"];
+
+// ── CodeMirror 5 custom mode for Arabic ─────────────────────────
+CodeMirror.defineMode("lughatdad", function() {
+  return {
+    token: function(stream) {
+      if (stream.eatSpace()) return null;
+
+      // comment
+      if (stream.match("//")) { stream.skipToEnd(); return "cmt"; }
+
+      // string
+      if (stream.eat('"')) {
+        while (!stream.eol()) { if (stream.eat('"')) break; stream.next(); }
+        return "str";
+      }
+
+      // number (Western + Eastern Arabic digits)
+      if (/[0-9\u0660-\u0669]/.test(stream.peek())) {
+        stream.match(/^[0-9\u0660-\u0669]+(\.[0-9\u0660-\u0669]+)?/);
+        return "num";
+      }
+
+      // Arabic word — keyword / bool / ident
+      if (/[\u0600-\u06FF]/.test(stream.peek())) {
+        let w = "";
+        while (/[\u0600-\u06FF0-9\u0660-\u0669]/.test(stream.peek()))
+          w += stream.next();
+        if (KW.includes(w))      return "kw";
+        if (BOOL_KW.includes(w)) return "bool";
+        return "ident";
+      }
+
+      // operator
+      if (stream.match(/^(==|!=|>=|<=|[+\-*\/><=])/)) return "op";
+
+      // punctuation
+      if (stream.match(/^[(){};\u061B]/)) return "op";
+
+      stream.next();
+      return null;
+    }
+  };
+});
+
+// ── Build CodeMirror editor ──────────────────────────────────────
+const editor = CodeMirror.fromTextArea(document.getElementById("codeArea"), {
+  mode: "lughatdad",
+  theme: "dracula",
+  lineNumbers: true,
+  direction: "rtl",
+  lineWrapping: true,
+  autofocus: true,
+  indentUnit: 4,
+  tabSize: 4,
+  extraKeys: {
+    "Ctrl-Enter": runCode,
+    "Cmd-Enter":  runCode,
+  }
+});
+
+editor.setValue(EXAMPLES.nested);
+
+// Force RTL on the editor scroller after init
+setTimeout(() => {
+  document.querySelector(".CodeMirror-scroll").setAttribute("dir", "rtl");
+  document.querySelector(".CodeMirror-lines").style.direction = "rtl";
+}, 100);
+
+// ── Backend API URL ──────────────────────────────────────────────
+const API = (window.location.protocol === "file:")
+  ? "http://localhost:5050"
+  : window.location.origin;
+
+// ── Server health check ──────────────────────────────────────────
+async function checkServer() {
+  const dot   = document.getElementById("srvDot");
+  const label = document.getElementById("srvLabel");
+  try {
+    const res = await fetch(API + "/api/health", { signal: AbortSignal.timeout(2500) });
+    if (res.ok) {
+      dot.className   = "srv-dot online";
+      label.textContent = "الخادم متصل · LughatDad.jj";
+    } else throw new Error();
+  } catch {
+    dot.className   = "srv-dot offline";
+    label.textContent = "الخادم غير متصل";
+  }
+}
+
+checkServer();
+setInterval(checkServer, 8000);
+
+// ── Run code ─────────────────────────────────────────────────────
+async function runCode() {
+  const code = editor.getValue().trim();
+  const btn  = document.getElementById("btnRun");
+  const dot  = document.getElementById("stDot");
+  const text = document.getElementById("stText");
+
+  btn.classList.add("busy");
+  btn.textContent = "⏳ جارٍ التنفيذ...";
+  dot.className = "st-dot run";
+  text.textContent = "جارٍ التنفيذ...";
+
+  const t0 = performance.now();
+
+  try {
+    const res = await fetch(API + "/api/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+      signal: AbortSignal.timeout(15000)
+    });
+
+    const data = await res.json();
+    const ms   = Math.round(performance.now() - t0);
+    renderOutput(data, ms);
+
+  } catch (err) {
+    // Server unavailable — fall back to client-side JS interpreter
+    const ms = Math.round(performance.now() - t0);
+    try {
+      const result = window._arabicInterp(code);
+      renderOutput(result, ms);
+    } catch (ie) {
+      renderOutput({ success: false, output: [], error: ie.message }, ms);
+    }
+  } finally {
+    btn.classList.remove("busy");
+    btn.innerHTML = "▶&nbsp; تشغيل";
+  }
+}
+
+// ── Render output ────────────────────────────────────────────────
+function renderOutput(data, ms) {
+  const content = document.getElementById("outputContent");
+  const empty   = document.getElementById("outEmpty");
+  const dot     = document.getElementById("stDot");
+  const text    = document.getElementById("stText");
+  const timeEl  = document.getElementById("execTime");
+  const stTime  = document.getElementById("stTime");
+
+  content.innerHTML = "";
+
+  if (data.error) {
+    const line = mkLine("!", "❌ " + esc(data.error), "err");
+    content.appendChild(line);
+    dot.className = "st-dot err";
+    text.textContent = "خطأ في التنفيذ";
+  } else if (!data.output || data.output.length === 0) {
+    const line = mkLine("✓", "تم التنفيذ بنجاح — لا يوجد ناتج", "succ");
+    content.appendChild(line);
+    dot.className = "st-dot ok";
+    text.textContent = "تم التنفيذ بنجاح";
+  } else {
+    data.output.forEach((item, i) => {
+      content.appendChild(mkLine(i + 1, esc(String(item)), ""));
+    });
+    dot.className = "st-dot ok";
+    text.textContent = `تم التنفيذ · ${data.output.length} سطر`;
+  }
+
+  timeEl.textContent = ms + "ms";
+  stTime.textContent = new Date().toLocaleTimeString("ar-SA");
+}
+
+function mkLine(num, html, cls) {
+  const d = document.createElement("div");
+  d.className = "out-line" + (cls ? " " + cls : "");
+  d.innerHTML = `<span class="ln">${num}</span><span class="lt">${html}</span>`;
+  return d;
+}
+
+function esc(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// ── Clear ────────────────────────────────────────────────────────
+document.getElementById("btnClear").addEventListener("click", () => {
+  editor.setValue("");
+  const content = document.getElementById("outputContent");
+  content.innerHTML = "";
+  content.appendChild(document.getElementById("outEmpty") || (() => {
+    const d = document.createElement("div"); d.id = "outEmpty"; d.className = "out-empty";
+    d.innerHTML = '<div class="icon">⌘</div><p>اضغط <strong>تشغيل</strong> لتنفيذ الكود</p>';
+    return d;
+  })());
+  document.getElementById("stDot").className = "st-dot";
+  document.getElementById("stText").textContent = "جاهز";
+  document.getElementById("execTime").textContent = "";
+  editor.focus();
+});
+
+document.getElementById("btnRun").addEventListener("click", runCode);
+
+// ── Example chips ────────────────────────────────────────────────
+document.querySelectorAll(".chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const key = chip.dataset.ex;
+    if (EXAMPLES[key]) { editor.setValue(EXAMPLES[key]); editor.focus(); }
+  });
+});
+
+// ── Resizer (drag to resize panes) ──────────────────────────────
+(function() {
+  const resizer = document.getElementById("resizer");
+  const left    = document.getElementById("editorPanel");
+  const right   = document.getElementById("outputPanel");
+  let dragging = false, startX, startLW, startRW;
+
+  resizer.addEventListener("mousedown", e => {
+    dragging = true;
+    startX  = e.clientX;
+    startLW = left.getBoundingClientRect().width;
+    startRW = right.getBoundingClientRect().width;
+    resizer.classList.add("drag");
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const dx = startX - e.clientX; // RTL direction
+    const nL = startLW - dx;
+    const nR = startRW + dx;
+    if (nL < 250 || nR < 200) return;
+    const total = nL + nR;
+    left.style.flex  = `0 0 ${(nL/total*100).toFixed(2)}%`;
+    right.style.flex = `0 0 ${(nR/total*100).toFixed(2)}%`;
+  });
+
+  document.addEventListener("mouseup", () => {
+    dragging = false;
+    resizer.classList.remove("drag");
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  });
+})();
+
+// ── HOME BUTTON ─────────────────────────────────────────────────
+document.getElementById('btnHome').addEventListener('click', function() {
+  window.location.href = 'index.html';
+});
+
+// ════════════════════════════════════════════════════════════════
+//  CLIENT-SIDE ARABIC INTERPRETER — لغة ضاد
+//  Runs Arabic code entirely in the browser (no server needed).
+//  Used as fallback when the Java backend is not reachable.
+// ════════════════════════════════════════════════════════════════
+(function () {
+
+  // ── TOKENIZER ─────────────────────────────────────────────
+  function tokenize(src) {
+    var toks = [], i = 0;
+    while (i < src.length) {
+      if (/\s/.test(src[i])) { i++; continue; }
+      // comment
+      if (src[i]==='/' && src[i+1]==='/') { while (i<src.length && src[i]!=='\n') i++; continue; }
+      // string
+      if (src[i]==='\'"\'' || src[i]==='"') {
+        var q=src[i++], s='';
+        while (i<src.length && src[i]!==q) s+=src[i++];
+        i++; toks.push({t:'STR',v:s}); continue;
+      }
+      // number (western + eastern arabic digits)
+      if (/[0-9\u0660-\u0669]/.test(src[i])) {
+        var n='';
+        while (i<src.length && /[0-9\u0660-\u0669.]/.test(src[i])) {
+          var cc=src.charCodeAt(i);
+          n += (cc>=0x0660&&cc<=0x0669) ? String.fromCharCode(cc-0x0660+48) : src[i];
+          i++;
+        }
+        toks.push({t:'NUM',v:parseFloat(n)}); continue;
+      }
+      // arabic word
+      if (/[\u0600-\u06FF]/.test(src[i])) {
+        var w='';
+        while (i<src.length && /[\u0600-\u06FF0-9\u0660-\u0669_]/.test(src[i])) w+=src[i++];
+        var kwMap = {'\u0645\u062a\u063a\u064a\u0631':'VAR','\u0627\u0637\u0628\u0639':'PRINT',
+          '\u0625\u0630\u0627':'IF','\u0648\u0625\u0644\u0627':'ELSE','\u0628\u064a\u0646\u0645\u0627':'WHILE',
+          '\u0635\u062d':'TRUE','\u062e\u0637\u0623':'FALSE'};
+        if (kwMap[w]) toks.push({t:kwMap[w]==='TRUE'?'BOOL':kwMap[w]==='FALSE'?'BOOL':kwMap[w], v:kwMap[w]==='TRUE'?true:kwMap[w]==='FALSE'?false:undefined});
+        else toks.push({t:'ID',v:w});
+        continue;
+      }
+      // two-char ops
+      var two=src.slice(i,i+2);
+      if (['==','!=','>=','<='].indexOf(two)>=0){toks.push({t:'OP',v:two});i+=2;continue;}
+      // single
+      var c=src[i];
+      if ('+-*/><'.indexOf(c)>=0){toks.push({t:'OP',v:c});i++;continue;}
+      if (c==='='){toks.push({t:'EQ'});i++;continue;}
+      if (c==='('){toks.push({t:'LP'});i++;continue;}
+      if (c===')'){toks.push({t:'RP'});i++;continue;}
+      if (c==='{'){toks.push({t:'LB'});i++;continue;}
+      if (c==='}'){toks.push({t:'RB'});i++;continue;}
+      if (c==='\u061B'||c===';'){toks.push({t:'SC'});i++;continue;}
+      i++;
+    }
+    toks.push({t:'EOF'}); return toks;
+  }
+
+  // ── PARSER → AST ─────────────────────────────────────────
+  function parse(toks) {
+    var p = 0;
+    function peek(){ return toks[p]; }
+    function next(){ return toks[p++]; }
+    function check(t){ return toks[p].t===t; }
+    function eat(t){
+      if(toks[p].t!==t) throw new Error('\u062e\u0637\u0623 \u0646\u062d\u0648\u064a: \u062a\u0648\u0642\u0639\u062a '+t+' \u0648\u0648\u062c\u062f\u062a '+JSON.stringify(toks[p]));
+      return toks[p++];
+    }
+    function parseBlock(){
+      var s=[];
+      while(!check('RB')&&!check('EOF')) s.push(parseStmt());
+      return s;
+    }
+    function parseStmt(){
+      var t=peek();
+      if(t.t==='VAR'){ next(); var nm=eat('ID').v; eat('EQ'); var vl=parseExpr(); eat('SC'); return {k:'decl',name:nm,val:vl}; }
+      if(t.t==='PRINT'){ next(); eat('LP'); var vl=parseExpr(); eat('RP'); eat('SC'); return {k:'print',val:vl}; }
+      if(t.t==='IF'){
+        next(); eat('LP'); var c=parseExpr(); eat('RP'); eat('LB'); var th=parseBlock(); eat('RB');
+        var el=null; if(check('ELSE')){ next(); eat('LB'); el=parseBlock(); eat('RB'); }
+        return {k:'if',cond:c,then:th,els:el};
+      }
+      if(t.t==='WHILE'){ next(); eat('LP'); var c=parseExpr(); eat('RP'); eat('LB'); var bd=parseBlock(); eat('RB'); return {k:'while',cond:c,body:bd}; }
+      if(t.t==='ID'){ var nm=next().v; eat('EQ'); var vl=parseExpr(); eat('SC'); return {k:'assign',name:nm,val:vl}; }
+      if(t.t==='SC'){ next(); return {k:'empty'}; }
+      throw new Error('\u062e\u0637\u0623: \u062c\u0645\u0644\u0629 \u063a\u064a\u0631 \u0645\u062a\u0648\u0642\u0639\u0629: '+JSON.stringify(t));
+    }
+    function parseExpr(){ return parseCmp(); }
+    function parseCmp(){
+      var l=parseAdd();
+      while(peek().t==='OP' && ['==','!=','>=','<=','>','<'].indexOf(peek().v)>=0){
+        var op=next().v; l={k:'bin',op:op,l:l,r:parseAdd()};
+      }
+      return l;
+    }
+    function parseAdd(){
+      var l=parseMul();
+      while(peek().t==='OP' && (peek().v==='+'||peek().v==='-')){
+        var op=next().v; l={k:'bin',op:op,l:l,r:parseMul()};
+      }
+      return l;
+    }
+    function parseMul(){
+      var l=parseUnary();
+      while(peek().t==='OP' && (peek().v==='*'||peek().v==='/')){
+        var op=next().v; l={k:'bin',op:op,l:l,r:parseUnary()};
+      }
+      return l;
+    }
+    function parseUnary(){
+      if(peek().t==='OP'&&peek().v==='-'){ next(); return {k:'neg',v:parsePrimary()}; }
+      return parsePrimary();
+    }
+    function parsePrimary(){
+      var t=peek();
+      if(t.t==='NUM'){next();return {k:'num',v:t.v};}
+      if(t.t==='STR'){next();return {k:'str',v:t.v};}
+      if(t.t==='BOOL'){next();return {k:'bool',v:t.v};}
+      if(t.t==='ID'){next();return {k:'id',v:t.v};}
+      if(t.t==='LP'){next();var e=parseExpr();eat('RP');return e;}
+      throw new Error('\u062e\u0637\u0623: \u062a\u0639\u0628\u064a\u0631 \u063a\u064a\u0631 \u0645\u062a\u0648\u0642\u0639: '+JSON.stringify(t));
+    }
+    var stmts=[];
+    while(!check('EOF')) stmts.push(parseStmt());
+    return {k:'prog',stmts:stmts};
+  }
+
+  // ── EVALUATOR ────────────────────────────────────────────
+  function evaluate(ast) {
+    var out=[], env={};
+    function fmtVal(v){ return v===true?'\u0635\u062d':v===false?'\u062e\u0637\u0623':String(v); }
+    function execNode(nd){
+      if(!nd) return;
+      switch(nd.k){
+        case 'prog': nd.stmts.forEach(execNode); break;
+        case 'empty': break;
+        case 'decl': env[nd.name]=evalExpr(nd.val); break;
+        case 'assign':
+          if(!(nd.name in env)) throw new Error('\u062e\u0637\u0623: \u0645\u062a\u063a\u064a\u0631 \u063a\u064a\u0631 \u0645\u0639\u0631\u0651\u0641: '+nd.name);
+          env[nd.name]=evalExpr(nd.val); break;
+        case 'print': out.push(fmtVal(evalExpr(nd.val))); break;
+        case 'if':
+          if(evalExpr(nd.cond)) nd.then.forEach(execNode);
+          else if(nd.els) nd.els.forEach(execNode);
+          break;
+        case 'while':{
+          var g=0;
+          while(evalExpr(nd.cond)){
+            nd.body.forEach(execNode);
+            if(++g>10000) throw new Error('\u062e\u0637\u0623: \u062d\u0644\u0642\u0629 \u0644\u0627 \u0646\u0647\u0627\u064a\u0629');
+          }
+          break;
+        }
+      }
+    }
+    function evalExpr(nd){
+      switch(nd.k){
+        case 'num': return nd.v;
+        case 'str': return nd.v;
+        case 'bool': return nd.v;
+        case 'id':
+          if(!(nd.v in env)) throw new Error('\u062e\u0637\u0623: \u0645\u062a\u063a\u064a\u0631 \u063a\u064a\u0631 \u0645\u0639\u0631\u0651\u0641: '+nd.v);
+          return env[nd.v];
+        case 'neg': return -evalExpr(nd.v);
+        case 'bin':{
+          var l=evalExpr(nd.l), r=evalExpr(nd.r);
+          switch(nd.op){
+            case '+': return (typeof l==='string'||typeof r==='string') ? String(l)+String(r) : l+r;
+            case '-': return l-r; case '*': return l*r;
+            case '/': if(r===0) throw new Error('\u062e\u0637\u0623: \u0627\u0644\u0642\u0633\u0645\u0629 \u0639\u0644\u0649 \u0635\u0641\u0631'); return l/r;
+            case '==': return l===r; case '!=': return l!==r;
+            case '>': return l>r; case '<': return l<r;
+            case '>=': return l>=r; case '<=': return l<=r;
+          }
+        }
+      }
+    }
+    execNode(ast);
+    return out;
+  }
+
+  // ── PUBLIC API ────────────────────────────────────────────
+  window._arabicInterp = function(code) {
+    var toks = tokenize(code);
+    var ast  = parse(toks);
+    var out  = evaluate(ast);
+    return { success: true, output: out, error: null };
+  };
+
+})();
+// ════════════════════════ END INTERPRETER ════════════════════════
+
+
+</script>
+
 </body>
 </html>
