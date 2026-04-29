@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>تسجيل الدخول — لغة ضاد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#09090f;--surface:#12141e;--elevated:#1a1d2e;
+  --border:#252840;--purple:#7c6af7;--purple-light:#a89cff;
+  --purple-dim:#2e2a5a;--text:#e8eaf6;--text-sec:#8b90b8;
+  --text-muted:#4a4f72;--green:#4ade80;--red:#f87171;
+  --font:'Cairo','Inter',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);font-family:var(--font);color:var(--text);
+  background-image:linear-gradient(rgba(124,106,247,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,106,247,.04) 1px,transparent 1px);
+  background-size:60px 60px;}
+.orb{position:fixed;border-radius:50%;pointer-events:none;}
+.orb1{width:600px;height:600px;top:-200px;right:-200px;
+  background:radial-gradient(circle,rgba(124,106,247,.18) 0%,transparent 65%);}
+.orb2{width:400px;height:400px;bottom:-150px;left:-150px;
+  background:radial-gradient(circle,rgba(34,211,238,.1) 0%,transparent 65%);}
+.card{position:relative;z-index:1;background:rgba(18,20,30,.9);
+  border:1px solid rgba(124,106,247,.2);border-radius:20px;
+  padding:2.5rem;width:100%;max-width:420px;
+  box-shadow:0 0 60px rgba(124,106,247,.12);
+  backdrop-filter:blur(20px);}
+.logo{text-align:center;margin-bottom:2rem;}
+.logo-badge{display:inline-block;background:linear-gradient(135deg,#7c6af7,#5b4de8);
+  color:#fff;font-size:2rem;font-weight:900;padding:.4rem 1.4rem;
+  border-radius:50px;box-shadow:0 0 30px rgba(124,106,247,.5);margin-bottom:.8rem;}
+.logo h1{font-size:1.4rem;font-weight:700;color:var(--text);}
+.logo p{font-size:.8rem;color:var(--text-muted);}
+.tabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;
+  padding:4px;margin-bottom:1.8rem;}
+.tab{flex:1;padding:.55rem;text-align:center;border-radius:8px;
+  font-size:.85rem;font-weight:600;cursor:pointer;border:none;
+  background:transparent;color:var(--text-sec);transition:all .2s;}
+.tab.active{background:var(--purple);color:#fff;
+  box-shadow:0 0 16px rgba(124,106,247,.4);}
+.form-group{margin-bottom:1.2rem;}
+label{display:block;font-size:.8rem;font-weight:600;
+  color:var(--text-sec);margin-bottom:.45rem;}
+input{width:100%;padding:.75rem 1rem;background:var(--bg);
+  border:1px solid var(--border);border-radius:10px;
+  color:var(--text);font-family:var(--font);font-size:.9rem;
+  outline:none;transition:all .2s;direction:rtl;}
+input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,106,247,.15);}
+.btn-submit{width:100%;padding:.85rem;background:linear-gradient(135deg,#7c6af7,#5b4de8);
+  color:#fff;border:none;border-radius:12px;font-family:var(--font);
+  font-size:1rem;font-weight:700;cursor:pointer;margin-top:.5rem;
+  box-shadow:0 6px 24px rgba(124,106,247,.4);transition:all .25s;}
+.btn-submit:hover{filter:brightness(1.1);transform:translateY(-2px);
+  box-shadow:0 10px 32px rgba(124,106,247,.55);}
+.btn-submit:active{transform:translateY(0);}
+.divider{display:flex;align-items:center;gap:.8rem;margin:1.2rem 0;
+  color:var(--text-muted);font-size:.78rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.msg{text-align:center;font-size:.78rem;color:var(--text-muted);margin-top:1rem;}
+.msg a{color:var(--purple-light);text-decoration:none;font-weight:600;}
+.alert{padding:.75rem 1rem;border-radius:10px;font-size:.83rem;
+  margin-bottom:1rem;display:none;}
+.alert.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red);}
+.alert.ok{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--green);}
+.back-link{position:fixed;top:1.5rem;right:1.5rem;display:flex;align-items:center;
+  gap:.5rem;color:var(--text-sec);text-decoration:none;font-size:.83rem;
+  font-weight:600;padding:.5rem 1rem;border:1px solid var(--border);
+  border-radius:8px;background:rgba(255,255,255,.03);transition:all .2s;}
+.back-link:hover{color:var(--purple-light);border-color:var(--purple);}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<a class="back-link" href="index.html">← الرئيسية</a>
+<div class="card">
+  <div class="logo">
+    <div class="logo-badge">ضاد</div>
+    <h1>لغة ضاد</h1>
+    <p>LughatDad — Arabic Programming Language</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('login')">تسجيل الدخول</button>
+    <button class="tab" onclick="switchTab('register')">إنشاء حساب</button>
+  </div>
+  <div id="alertBox" class="alert"></div>
+
+  <!-- Login Form -->
+  <form id="loginForm" onsubmit="doLogin(event)">
+    <div class="form-group">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="loginEmail" placeholder="example@email.com" required/>
+    </div>
+    <div class="form-group">
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPass" placeholder="••••••••" required/>
+    </div>
+    <button type="submit" class="btn-submit">دخول إلى المحرر →</button>
+  </form>
+
+  <!-- Register Form -->
+  <form id="registerForm" style="display:none" onsubmit="doRegister(event)">
+    <div class="form-group">
+      <label>الاسم الكامل</label>
+      <input type="text" id="regName" placeholder="اسمك" required/>
+    </div>
+    <div class="form-group">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="regEmail" placeholder="example@email.com" required/>
+    </div>
+    <div class="form-group">
+      <label>كلمة المرور</label>
+      <input type="password" id="regPass" placeholder="8 أحرف على الأقل" minlength="6" required/>
+    </div>
+    <button type="submit" class="btn-submit">إنشاء الحساب</button>
+  </form>
+
+  <div class="divider">أو تجربة مباشرة</div>
+  <button class="btn-submit" style="background:rgba(124,106,247,.15);box-shadow:none;border:1px solid rgba(124,106,247,.3);" onclick="guestLogin()">دخول كزائر — بدون حساب</button>
+</div>
+
+<script>
+const USERS_KEY = 'lughatdad_users';
+const SESSION_KEY = 'lughatdad_session';
+
+function getUsers(){ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+
+function showAlert(msg, type){
+  var a = document.getElementById('alertBox');
+  a.textContent = msg; a.className = 'alert '+type; a.style.display='block';
+  setTimeout(()=>a.style.display='none', 4000);
+}
+
+function switchTab(t){
+  var tabs = document.querySelectorAll('.tab');
+  tabs[0].classList.toggle('active', t==='login');
+  tabs[1].classList.toggle('active', t==='register');
+  document.getElementById('loginForm').style.display = t==='login'?'':'none';
+  document.getElementById('registerForm').style.display = t==='register'?'':'none';
+  document.getElementById('alertBox').style.display='none';
+}
+
+function doLogin(e){
+  e.preventDefault();
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass  = document.getElementById('loginPass').value;
+  var users = getUsers();
+  var user  = users.find(u=>u.email===email && u.pass===btoa(pass));
+  if(!user){ showAlert('البريد أو كلمة المرور غير صحيحة','err'); return; }
+  localStorage.setItem(SESSION_KEY, JSON.stringify({name:user.name, email:user.email}));
+  showAlert('مرحباً '+user.name+' 👋','ok');
+  setTimeout(()=>window.location.href='ide.html', 1000);
+}
+
+function doRegister(e){
+  e.preventDefault();
+  var name  = document.getElementById('regName').value.trim();
+  var email = document.getElementById('regEmail').value.trim();
+  var pass  = document.getElementById('regPass').value;
+  var users = getUsers();
+  if(users.find(u=>u.email===email)){ showAlert('البريد مستخدم مسبقاً','err'); return; }
+  users.push({name, email, pass:btoa(pass)});
+  saveUsers(users);
+  showAlert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن','ok');
+  setTimeout(()=>switchTab('login'), 1500);
+}
+
+function guestLogin(){
+  localStorage.setItem(SESSION_KEY, JSON.stringify({name:'زائر', email:'guest', guest:true}));
+  window.location.href='ide.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>تعلم لغة ضاد — كيفية الكتابة بالعربية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#09090f;--surface:#12141e;--elevated:#1a1d2e;
+  --border:#252840;--border-lit:#363a5a;
+  --purple:#7c6af7;--purple-light:#a89cff;--purple-dim:#2e2a5a;
+  --text:#e8eaf6;--text-sec:#8b90b8;--text-muted:#4a4f72;
+  --green:#4ade80;--amber:#fbbf24;--cyan:#22d3ee;--red:#f87171;
+  --font:'Cairo','Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);font-family:var(--font);color:var(--text);
+  background-image:linear-gradient(rgba(124,106,247,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,106,247,.04) 1px,transparent 1px);
+  background-size:60px 60px;}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;}
+.orb1{width:600px;height:600px;top:-200px;right:-200px;
+  background:radial-gradient(circle,rgba(124,106,247,.15) 0%,transparent 65%);}
+.orb2{width:400px;height:400px;bottom:-150px;left:-150px;
+  background:radial-gradient(circle,rgba(34,211,238,.08) 0%,transparent 65%);}
+
+nav{position:sticky;top:0;z-index:100;
+  background:rgba(9,9,15,.85);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(124,106,247,.15);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.85rem 2rem;}
+.nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;}
+.nav-logo .badge{background:linear-gradient(135deg,#7c6af7,#5b4de8);
+  color:#fff;font-size:1.1rem;font-weight:900;padding:.25rem 1rem;
+  border-radius:50px;box-shadow:0 0 16px rgba(124,106,247,.4);}
+.nav-logo span{font-size:1rem;font-weight:700;color:var(--text);}
+.nav-links{display:flex;align-items:center;gap:.5rem;}
+.nav-link{color:var(--text-sec);text-decoration:none;font-size:.85rem;
+  font-weight:600;padding:.5rem .9rem;border-radius:8px;transition:all .2s;}
+.nav-link:hover,.nav-link.active{color:var(--purple-light);background:rgba(124,106,247,.1);}
+.nav-btn{background:linear-gradient(135deg,#7c6af7,#5b4de8);color:#fff;
+  text-decoration:none;font-size:.85rem;font-weight:700;
+  padding:.5rem 1.2rem;border-radius:8px;transition:all .2s;}
+.nav-btn:hover{filter:brightness(1.1);}
+
+.layout{display:flex;max-width:1100px;margin:0 auto;padding:3rem 1.5rem;gap:2rem;}
+
+/* Sidebar */
+.sidebar{width:240px;flex-shrink:0;position:sticky;top:80px;height:fit-content;}
+.sidebar-title{font-size:.7rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-muted);margin-bottom:.8rem;}
+.sidebar-item{display:block;padding:.5rem .8rem;border-radius:8px;
+  color:var(--text-sec);text-decoration:none;font-size:.83rem;
+  font-weight:600;transition:all .2s;border-right:2px solid transparent;}
+.sidebar-item:hover{color:var(--purple-light);background:rgba(124,106,247,.06);}
+.sidebar-item.active{color:var(--purple-light);background:rgba(124,106,247,.1);
+  border-right-color:var(--purple);}
+.sidebar-sep{height:1px;background:var(--border);margin:.6rem 0;}
+
+/* Content */
+.content{flex:1;min-width:0;}
+.page-header{margin-bottom:3rem;}
+.page-badge{display:inline-flex;align-items:center;gap:.4rem;
+  padding:.3rem .9rem;border-radius:999px;
+  border:1px solid rgba(124,106,247,.3);background:rgba(124,106,247,.08);
+  color:var(--purple-light);font-size:.72rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem;}
+.page-header h1{font-size:2.2rem;font-weight:900;margin-bottom:.6rem;}
+.page-header p{color:var(--text-sec);}
+
+section{margin-bottom:3.5rem;scroll-margin-top:90px;}
+section h2{font-size:1.3rem;font-weight:800;margin-bottom:1rem;
+  display:flex;align-items:center;gap:.6rem;}
+section h2 .sec-num{display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:8px;background:var(--purple-dim);
+  color:var(--purple-light);font-size:.75rem;font-weight:700;flex-shrink:0;}
+section p{color:var(--text-sec);line-height:1.8;margin-bottom:1rem;}
+section ul{list-style:none;margin-bottom:1rem;}
+section ul li{color:var(--text-sec);line-height:1.8;padding:.2rem 0;
+  padding-right:1.2rem;position:relative;}
+section ul li::before{content:'▸';position:absolute;right:0;color:var(--purple);}
+
+.code-block{background:var(--bg);border:1px solid var(--border);
+  border-radius:12px;margin:1rem 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;
+  padding:.6rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);}
+.code-lang{font-size:.7rem;font-weight:700;color:var(--purple-light);letter-spacing:.08em;}
+.copy-btn{font-size:.7rem;color:var(--text-muted);cursor:pointer;border:none;
+  background:none;font-family:var(--font);transition:color .2s;}
+.copy-btn:hover{color:var(--purple-light);}
+pre{padding:1.2rem;overflow-x:auto;direction:rtl;}
+code{font-family:var(--mono);font-size:.88rem;line-height:1.75;color:#cdd6f4;}
+.kw{color:#bd93f9;font-weight:700;}
+.str{color:#50fa7b;}
+.num{color:#ffb86c;}
+.cmt{color:#6272a4;font-style:italic;}
+.op{color:#8be9fd;}
+
+.keyword-table{width:100%;border-collapse:collapse;margin:1rem 0;}
+.keyword-table th,.keyword-table td{padding:.7rem 1rem;text-align:right;
+  border-bottom:1px solid var(--border);}
+.keyword-table th{font-size:.75rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-muted);background:var(--surface);}
+.keyword-table td{font-size:.88rem;}
+.keyword-table tr:hover td{background:rgba(124,106,247,.04);}
+.kw-arabic{color:var(--purple-light);font-weight:700;}
+.kw-desc{color:var(--text-sec);}
+
+.tip-box{padding:1rem 1.2rem;border-radius:12px;margin:1rem 0;
+  display:flex;gap:.8rem;align-items:flex-start;}
+.tip-box.info{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);}
+.tip-box.warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);}
+.tip-box.good{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);}
+.tip-icon{font-size:1.1rem;flex-shrink:0;}
+.tip-box p{margin:0;font-size:.85rem;color:var(--text-sec);}
+
+.try-btn{display:inline-flex;align-items:center;gap:.5rem;
+  padding:.55rem 1.2rem;border-radius:8px;
+  background:linear-gradient(135deg,#7c6af7,#5b4de8);
+  color:#fff;font-family:var(--font);font-size:.83rem;font-weight:700;
+  text-decoration:none;transition:all .22s;border:none;cursor:pointer;}
+.try-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
+
+@media(max-width:768px){
+  .layout{flex-direction:column;}
+  .sidebar{width:100%;position:static;}
+}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="badge">ضاد</div>
+    <span>لغة ضاد</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">الرئيسية</a>
+    <a class="nav-link" href="ide.html">المحرر</a>
+    <a class="nav-link active" href="learn.html">تعلم</a>
+    <a class="nav-link" href="contact.html">تواصل معنا</a>
+    <a class="nav-btn" href="login.html">دخول</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-title">المحتويات</div>
+    <a class="sidebar-item active" href="#intro">مقدمة</a>
+    <a class="sidebar-item" href="#keywords">الكلمات المفتاحية</a>
+    <div class="sidebar-sep"></div>
+    <a class="sidebar-item" href="#variables">المتغيرات</a>
+    <a class="sidebar-item" href="#print">الطباعة</a>
+    <a class="sidebar-item" href="#conditions">الشروط</a>
+    <a class="sidebar-item" href="#loops">الحلقات</a>
+    <a class="sidebar-item" href="#operators">العمليات</a>
+    <a class="sidebar-item" href="#examples">أمثلة كاملة</a>
+    <div class="sidebar-sep"></div>
+    <a class="sidebar-item" href="ide.html">→ افتح المحرر</a>
+  </aside>
+
+  <!-- Content -->
+  <main class="content">
+    <div class="page-header">
+      <div class="page-badge">📚 دليل التعلم</div>
+      <h1>كيف تكتب بلغة ضاد؟</h1>
+      <p>دليل شامل لتعلم كتابة البرامج بالعربية — من المتغيرات إلى الحلقات</p>
+    </div>
+
+    <!-- INTRO -->
+    <section id="intro">
+      <h2><span class="sec-num">١</span> مقدمة عن لغة ضاد</h2>
+      <p>
+        <strong>لغة ضاد</strong> هي لغة برمجة عربية كاملة تعتمد على الكلمات العربية الأصيلة كأوامر برمجية.
+        كل شيء فيها — الكلمات المفتاحية، أسماء المتغيرات، والمخرجات — يكتب بالعربية.
+      </p>
+      <div class="tip-box good">
+        <span class="tip-icon">✅</span>
+        <p>أسماء المتغيرات يجب أن تكون بالحروف العربية فقط (نطاق يونيكود ٠٦٢٠–٠٦٥F)</p>
+      </div>
+      <div class="tip-box info">
+        <span class="tip-icon">ℹ️</span>
+        <p>يمكن استخدام الأرقام الغربية (0–9) أو الأرقام العربية (٠–٩) في القيم العددية</p>
+      </div>
+      <div class="tip-box warn">
+        <span class="tip-icon">⚠️</span>
+        <p>كل جملة يجب أن تنتهي بفاصلة منقوطة: <strong>؛</strong> أو <strong>;</strong></p>
+      </div>
+    </section>
+
+    <!-- KEYWORDS -->
+    <section id="keywords">
+      <h2><span class="sec-num">٢</span> الكلمات المفتاحية</h2>
+      <p>هذه هي الكلمات المحجوزة في لغة ضاد — لا يمكن استخدامها كأسماء متغيرات:</p>
+      <table class="keyword-table">
+        <thead><tr><th>الكلمة</th><th>الوظيفة</th><th>مثال</th></tr></thead>
+        <tbody>
+          <tr><td class="kw-arabic">متغير</td><td class="kw-desc">تعريف متغير جديد</td><td><code>متغير س = 5؛</code></td></tr>
+          <tr><td class="kw-arabic">اطبع</td><td class="kw-desc">طباعة قيمة على الشاشة</td><td><code>اطبع(س)؛</code></td></tr>
+          <tr><td class="kw-arabic">إذا</td><td class="kw-desc">جملة شرطية</td><td><code>إذا (س > 0) { ... }</code></td></tr>
+          <tr><td class="kw-arabic">وإلا</td><td class="kw-desc">الفرع البديل للشرط</td><td><code>} وإلا { ... }</code></td></tr>
+          <tr><td class="kw-arabic">بينما</td><td class="kw-desc">حلقة تكرار</td><td><code>بينما (عداد <= 10) { ... }</code></td></tr>
+          <tr><td class="kw-arabic">صح</td><td class="kw-desc">القيمة المنطقية true</td><td><code>متغير ص = صح؛</code></td></tr>
+          <tr><td class="kw-arabic">خطأ</td><td class="kw-desc">القيمة المنطقية false</td><td><code>متغير خ = خطأ؛</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- VARIABLES -->
+    <section id="variables">
+      <h2><span class="sec-num">٣</span> المتغيرات</h2>
+      <p>لتعريف متغير، استخدم الكلمة المفتاحية <strong>متغير</strong> يليها الاسم ثم القيمة:</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="cmt">// تعريف متغيرات من أنواع مختلفة</span>
+<span class="kw">متغير</span> رقم = <span class="num">42</span>؛
+<span class="kw">متغير</span> نص = <span class="str">"مرحبا بالعالم"</span>؛
+<span class="kw">متغير</span> حالة = <span class="kw">صح</span>؛
+<span class="kw">متغير</span> ناتج = <span class="num">3.14</span>؛</code></pre>
+      </div>
+      <p>لتغيير قيمة متغير موجود مسبقاً، اكتب اسمه مباشرة بدون كلمة "متغير":</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="kw">متغير</span> عداد = <span class="num">0</span>؛
+عداد = عداد <span class="op">+</span> <span class="num">1</span>؛  <span class="cmt">// تحديث القيمة</span></code></pre>
+      </div>
+    </section>
+
+    <!-- PRINT -->
+    <section id="print">
+      <h2><span class="sec-num">٤</span> الطباعة — اطبع</h2>
+      <p>استخدم <strong>اطبع()</strong> لعرض أي قيمة على الشاشة:</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="kw">اطبع</span>(<span class="str">"مرحبا!"</span>)؛
+<span class="kw">اطبع</span>(<span class="num">2</span> <span class="op">+</span> <span class="num">3</span>)؛
+<span class="kw">متغير</span> س = <span class="num">10</span>؛
+<span class="kw">اطبع</span>(س)؛</code></pre>
+      </div>
+      <p>المخرجات: <code style="color:var(--green)">مرحبا!</code> ثم <code style="color:var(--green)">5</code> ثم <code style="color:var(--green)">10</code></p>
+    </section>
+
+    <!-- CONDITIONS -->
+    <section id="conditions">
+      <h2><span class="sec-num">٥</span> الشروط — إذا / وإلا</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="kw">متغير</span> درجة = <span class="num">75</span>؛
+
+<span class="kw">إذا</span> (درجة <span class="op">>=</span> <span class="num">90</span>) {
+    <span class="kw">اطبع</span>(<span class="str">"ممتاز"</span>)؛
+} <span class="kw">وإلا</span> {
+    <span class="kw">إذا</span> (درجة <span class="op">>=</span> <span class="num">60</span>) {
+        <span class="kw">اطبع</span>(<span class="str">"ناجح"</span>)؛
+    } <span class="kw">وإلا</span> {
+        <span class="kw">اطبع</span>(<span class="str">"راسب"</span>)؛
+    }
+}</code></pre>
+      </div>
+      <p>عوامل المقارنة المتاحة:</p>
+      <ul>
+        <li><code>&gt;</code> أكبر من &nbsp;|&nbsp; <code>&lt;</code> أصغر من</li>
+        <li><code>&gt;=</code> أكبر أو يساوي &nbsp;|&nbsp; <code>&lt;=</code> أصغر أو يساوي</li>
+        <li><code>==</code> يساوي &nbsp;|&nbsp; <code>!=</code> لا يساوي</li>
+      </ul>
+    </section>
+
+    <!-- LOOPS -->
+    <section id="loops">
+      <h2><span class="sec-num">٦</span> الحلقات — بينما</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="cmt">// طباعة الأعداد من 1 إلى 5</span>
+<span class="kw">متغير</span> عداد = <span class="num">1</span>؛
+
+<span class="kw">بينما</span> (عداد <span class="op">&lt;=</span> <span class="num">5</span>) {
+    <span class="kw">اطبع</span>(عداد)؛
+    عداد = عداد <span class="op">+</span> <span class="num">1</span>؛
+}</code></pre>
+      </div>
+      <div class="tip-box warn">
+        <span class="tip-icon">⚠️</span>
+        <p>تأكد من تحديث متغير الشرط داخل الحلقة لتجنب الحلقة اللانهائية</p>
+      </div>
+    </section>
+
+    <!-- OPERATORS -->
+    <section id="operators">
+      <h2><span class="sec-num">٧</span> العمليات الحسابية</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="kw">متغير</span> أ = <span class="num">10</span>؛
+<span class="kw">متغير</span> ب = <span class="num">3</span>؛
+
+<span class="kw">اطبع</span>(أ <span class="op">+</span> ب)؛  <span class="cmt">// 13  — جمع</span>
+<span class="kw">اطبع</span>(أ <span class="op">-</span> ب)؛  <span class="cmt">// 7   — طرح</span>
+<span class="kw">اطبع</span>(أ <span class="op">*</span> ب)؛  <span class="cmt">// 30  — ضرب</span>
+<span class="kw">اطبع</span>(أ <span class="op">/</span> ب)؛  <span class="cmt">// 3.333... — قسمة</span></code></pre>
+      </div>
+    </section>
+
+    <!-- EXAMPLES -->
+    <section id="examples">
+      <h2><span class="sec-num">٨</span> أمثلة كاملة</h2>
+      <p><strong>مثال ١: جدول الضرب</strong></p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="kw">متغير</span> رقم = <span class="num">1</span>؛
+<span class="kw">بينما</span> (رقم <span class="op">&lt;=</span> <span class="num">10</span>) {
+    <span class="kw">اطبع</span>(<span class="num">5</span> <span class="op">*</span> رقم)؛
+    رقم = رقم <span class="op">+</span> <span class="num">1</span>؛
+}</code></pre>
+      </div>
+      <p><strong>مثال ٢: حساب مجموع الأعداد</strong></p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">لغة ضاد</span>
+          <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+        </div>
+        <pre><code><span class="kw">متغير</span> مجموع = <span class="num">0</span>؛
+<span class="kw">متغير</span> عداد = <span class="num">1</span>؛
+<span class="kw">بينما</span> (عداد <span class="op">&lt;=</span> <span class="num">100</span>) {
+    مجموع = مجموع <span class="op">+</span> عداد؛
+    عداد = عداد <span class="op">+</span> <span class="num">1</span>؛
+}
+<span class="kw">اطبع</span>(مجموع)؛  <span class="cmt">// 5050</span></code></pre>
+      </div>
+      <a class="try-btn" href="ide.html">▶ جرب هذه الأمثلة في المحرر</a>
+    </section>
+  </main>
+</div>
+
+<script>
+// Sidebar active tracking
+var sections = document.querySelectorAll('section[id]');
+var sidebarItems = document.querySelectorAll('.sidebar-item[href^="#"]');
+window.addEventListener('scroll', function(){
+  var scrollY = window.scrollY;
+  sections.forEach(function(s){
+    if(s.offsetTop - 100 <= scrollY){
+      sidebarItems.forEach(function(a){
+        a.classList.toggle('active', a.getAttribute('href')==='#'+s.id);
+      });
+    }
+  });
+});
+
+function copyCode(btn){
+  var pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(function(){
+    btn.textContent='تم النسخ ✓';
+    setTimeout(function(){btn.textContent='نسخ';},2000);
+  });
+}
+</script>
+</body>
+</html>
